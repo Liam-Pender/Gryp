@@ -12,7 +12,7 @@ function HomeScreen({ navigation }) {
 
   return (
     <ScrollView style={{ height: "100%" }}>
-      
+      <Image style={styles.logo} source={require('assets/GrypLogo.png')}/>
       <Text>Home Screen</Text>
       
     </ScrollView>
@@ -22,23 +22,37 @@ function HomeScreen({ navigation }) {
 function Calendar({navigation}) {
   return (
     <ScrollView style={{ height: "100%"}}>
-      <Image
-      style={styles.}></Image>
+      <Image style={styles.logo} source={require('assets/GrypLogo.png')}/>
       <Text>Calendar</Text>
     </ScrollView>
   )
 }
 
 function Goals({navigation}) {
-
+  return (
+    <ScrollView style={{ height: "100%"}}>
+      <Image style={styles.logo} source={require('assets/GrypLogo.png')}/>
+      <Text>Goals</Text>
+    </ScrollView>
+  )
 }
 
 function Settings({navigation}) {
-
+  return (
+    <ScrollView style={{ height: "100%"}}>
+      <Image style={styles.logo} source={require('assets/GrypLogo.png')}/>
+      <Text>Settings</Text>
+    </ScrollView>
+  )
 }
 
 function ClimbingLog({navigation}) {
-
+  return (
+    <ScrollView style={{ height: "100%"}}>
+      <Image style={styles.logo} source={require('assets/GrypLogo.png')}/>
+      <Text>Climbing Log</Text>
+    </ScrollView>
+  )
 }
 
 export default function App() {
@@ -83,8 +97,13 @@ const styles = StyleSheet.create({
   },
 
   logo: {
-    width: 100,
-    height: 50, 
-  }
+    alignSelf: 'center',
+    width: "50%",
+    marginVertical: 10,
+    borderRadius: 10,
+    height: 200 
+  },
+
+  
 
 });

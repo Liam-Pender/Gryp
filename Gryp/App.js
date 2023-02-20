@@ -11,18 +11,29 @@ function HomeScreen({ navigation }) {
 
 
   return (
-    <ScrollView style={{ height: "100%" }}>
-      <Image style={styles.logo} source={require('./assets/GrypLogo.png')}/>
-      <Text>Home Screen</Text>
-      
+    <ScrollView style={styles.scrollStyle}>
+      <Image style={styles.logo} source={require('./assets/GrypLogoWhite.png')}/>
+      <Image style={styles.homeImage} source={require('./assets/homeClimb.png')}/>
+      <TouchableOpacity style={styles.homeScreenTouchable} onPress={()=>navigation.navigate("Calendar")}>
+        <Text style={{textAlign: 'center',}}>Calendar</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.homeScreenTouchable} onPress={()=>navigation.navigate("ClimbingLog")}>
+        <Text style={{textAlign: 'center',}}>Climbing Log</Text>  
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.homeScreenTouchable} onPress={()=>navigation.navigate("Goals")}>
+        <Text style={{textAlign: 'center',}}>Goals</Text>  
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.homeScreenTouchable} onPress={()=>navigation.navigate("Setting")}>
+        <Text style={{textAlign: 'center',}}>Settings</Text>  
+      </TouchableOpacity>
     </ScrollView>
   )
 }
 
 function Calendar({navigation}) {
   return (
-    <ScrollView style={{ height: "100%"}}>
-      <Image style={styles.logo} source={require('./assets/GrypLogo.png')}/>
+    <ScrollView style={styles.scrollStyle}>
+      <Image style={styles.logo} source={require('./assets/GrypLogoWhite.png')}/>
       <Text>Calendar</Text>
     </ScrollView>
   )
@@ -30,8 +41,8 @@ function Calendar({navigation}) {
 
 function Goals({navigation}) {
   return (
-    <ScrollView style={{ height: "100%"}}>
-      <Image style={styles.logo} source={require('./assets/GrypLogo.png')}/>
+    <ScrollView style={styles.scrollStyle}>
+      <Image style={styles.logo} source={require('./assets/GrypLogoWhite.png')}/>
       <Text>Goals</Text>
     </ScrollView>
   )
@@ -39,8 +50,8 @@ function Goals({navigation}) {
 
 function Settings({navigation}) {
   return (
-    <ScrollView style={{ height: "100%"}}>
-      <Image style={styles.logo} source={require('./assets/GrypLogo.png')}/>
+    <ScrollView style={styles.scrollStyle}>
+      <Image style={styles.logo} source={require('./assets/GrypLogoWhite.png')}/>
       <Text>Settings</Text>
     </ScrollView>
   )
@@ -48,8 +59,8 @@ function Settings({navigation}) {
 
 function ClimbingLog({navigation}) {
   return (
-    <ScrollView style={{ height: "100%"}}>
-      <Image style={styles.logo} source={require('./assets/GrypLogo.png')}/>
+    <ScrollView style={styles.scrollStyle}>
+      <Image style={styles.logo} source={require('./assets/GrypLogoWhite.png')}/>
       <Text>Climbing Log</Text>
     </ScrollView>
   )
@@ -72,19 +83,28 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
-  // container: {
-  //   flex: 1,
-  //   backgroundColor: '#fff',
-  //   alignItems: 'center',
-  //   justifyContent: 'center',
-  // },
+  container: {
+    flex: 1,
+    backgroundColor: '0065ff',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 
-  // homeScreenCell: {
-  //   width: "100%",
-  //   height: 290,
-  //   backgroundColor: 'lightgray',
+  scrollStyle: {
+    width: "100%",
+    height: "100%",
+    backgroundColor: '#003482'
+  },
 
-  // },
+  homeScreenTouchable: {
+    alignSelf: 'center',
+    width: "90%",
+    height: 100,
+    backgroundColor: 'lightgray',
+    marginBottom: 10,
+    marginVertical: 10,
+    borderRadius: 10,
+  },
 
   // calendarMonth: {
   //   width: "100%",
@@ -105,6 +125,11 @@ const styles = StyleSheet.create({
     resizeMode: 'stretch',
   },
 
-  
+  homeImage: {
+    alignSelf: 'center',
+    width: "100%",
+    marginVertical: 10,
+    height: 200
+  },
 
 });

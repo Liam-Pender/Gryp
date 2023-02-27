@@ -72,10 +72,15 @@ function Goals({ navigation }) {
         source={require("./assets/GrypLogoWhite.png")}
       />
       <TouchableOpacity style={styles.newGoal}>
-        <Text>New Goal</Text>
+        <Text style={styles.newGoalText} >New Goal</Text>
       </TouchableOpacity>
       <GoalItem
+        date = {"2023-02-02"}
         text={"goal1"}
+      />
+      <GoalItem
+        date = {"2023-03-05"}
+        text={"goal2"}
       />
     </ScrollView>
   );
@@ -177,10 +182,15 @@ const styles = StyleSheet.create({
 
   newGoal: {
     width: "90%",
-    height: 80,
+    height: 30,
     backgroundColor: "white",
     borderRadius: 10,
+    alignSelf: "center",
+    marginBottom: 10
+  },
+
+  newGoalText: {
     fontSize: 18,
-    alignContent: "center",
+    textAlign: 'center'
   },
 });

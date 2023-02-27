@@ -3,9 +3,29 @@ import { StyleSheet, Text, View, Button, SafeAreaView, ScrollView, Image, Toucha
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Cell, Section, TableView } from 'react-native-tableview-simple';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import React from 'react';
+import UserData from './userdata.json'
+import LogInfo from './log.json'
 
 const Stack = createNativeStackNavigator();
+
+const ClimbingLogCell = (props) => (
+  <Cell 
+    {...props}
+    cellContentView={
+      <TouchableOpacity style={styles.logCell}>
+        <View style={styles.logName}>
+          <Text style={styles.logTitle}>{props.logEntryName} , {props.date}</Text>
+          <Text>Grade: {props.grade}</Text>
+        </View>
+        <View style={styles.logInfo}>
+          <Text>{props.logInfo}</Text>
+        </View>
+      </TouchableOpacity>
+    }/>
+)
+
 
 function HomeScreen({ navigation }) {
 
@@ -26,6 +46,7 @@ function HomeScreen({ navigation }) {
       <TouchableOpacity style={styles.homeScreenTouchable} onPress={()=>navigation.navigate("Setting")}>
         <Text style={{textAlign: 'center',}}>Settings</Text>  
       </TouchableOpacity>
+      <StatusBar style="auto" />
     </ScrollView>
   )
 }
@@ -52,16 +73,35 @@ function Settings({navigation}) {
   return (
     <ScrollView style={styles.scrollStyle}>
       <Image style={styles.logo} source={require('./assets/GrypLogoWhite.png')}/>
-      <Text>Settings</Text>
+      <Text>
+        Hello {JSONdata.name}
+      </Text>
     </ScrollView>
   )
 }
 
 function ClimbingLog({navigation}) {
+
+
   return (
     <ScrollView style={styles.scrollStyle}>
       <Image style={styles.logo} source={require('./assets/GrypLogoWhite.png')}/>
-      <Text>Climbing Log</Text>
+      <TableView>
+        {LogInfo.map((section, i) =>
+          <Section>
+              {section.Climbing_logs.map((cell, i) => (
+                <ClimbingLogCell
+                  logEntryName={cell.entry_name}
+                  date={cell.date}
+                  grade={cell.grade}
+                  logInfo={cell.info}
+                  />
+              ))}
+          </Section>
+
+        )}
+      </TableView>
+
     </ScrollView>
   )
 }
@@ -132,4 +172,28 @@ const styles = StyleSheet.create({
     height: 200
   },
 
+  logCell: {
+    width: "90%",
+    backgroundColor: "#ffffff",
+    borderRadius: 5,
+    height: 150
+  },
+
+  logName: {
+    width: "93%",
+    height: 70,
+    borderRadius: 5,
+    backgroundColor: 'lightgray'
+  },
+
+  logTitle: {
+    fontSize: 25
+  },
+
+  logInfo: {
+    width: "95%",
+    borderRadius: 5,
+    height:80
+  },  
 });
+

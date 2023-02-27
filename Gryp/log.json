@@ -1,7 +1,7 @@
 {
     "Climbing_logs": [
-        {"index": 0, "entry_name": "log 1", "date": "23/04/2022", "info": "Climbed today on a slab, it went well, fell off 3 times", "imagePath":"", "grade":"V4"},
-        {"index": 1, "entry_name": "log 2", "date": "", "info": "climbed today on an overhand, fell off 10 times ", "imagePath":"", "grade":""},
-        {"index": 2, "entry_name": "log 3", "date": "", "info": "blah blah blah",  "imagePath":"", "grade":""}
+        {"index": 0, "entry_name": "log 1", "date": "23/04/2022", "info": "Climbed today on a slab, it went well, fell off 3 times", "imagePath":"", "grade":"V4", "completed":true},
+        {"index": 1, "entry_name": "log 2", "date": "", "info": "climbed today on an overhand, fell off 10 times ", "imagePath":"", "grade":"", "completed":true},
+        {"index": 2, "entry_name": "log 3", "date": "", "info": "blah blah blah",  "imagePath":"", "grade":"", "completed":true}
     ]
 }

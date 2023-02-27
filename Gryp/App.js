@@ -1,26 +1,16 @@
 import { StatusBar } from "expo-status-bar";
-import {
-  StyleSheet,
-  Text,
-  View,
-  Button,
-  SafeAreaView,
-  ScrollView,
-  Image,
-  TouchableOpacity,
-} from "react-native";
+import {StyleSheet, Text, View, Button, SafeAreaView, ScrollView, Image, TouchableOpacity} from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { Cell, Section, TableView } from "react-native-tableview-simple";
+import { Section, TableView } from "react-native-tableview-simple";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React from "react";
 import UserData from "./userdata.json";
 import LogInfo from "./log.json";
 import {ClimbingLogCell} from './components/ClimbingLogCell.js';
+import { GoalItem } from "./components/GoalComp";
 
 const Stack = createNativeStackNavigator();
-
-
 
 function HomeScreen({ navigation }) {
   return (
@@ -81,7 +71,12 @@ function Goals({ navigation }) {
         style={styles.logo}
         source={require("./assets/GrypLogoWhite.png")}
       />
-      <Text>Goals</Text>
+      <TouchableOpacity style={styles.newGoal}>
+        <Text>New Goal</Text>
+      </TouchableOpacity>
+      <GoalItem
+        text={"goal1"}
+      />
     </ScrollView>
   );
 }
@@ -178,5 +173,14 @@ const styles = StyleSheet.create({
     width: "100%",
     marginVertical: 10,
     height: 200,
+  },
+
+  newGoal: {
+    width: "90%",
+    height: 80,
+    backgroundColor: "white",
+    borderRadius: 10,
+    fontSize: 18,
+    alignContent: "center",
   },
 });

@@ -1,5 +1,15 @@
 import { StatusBar } from "expo-status-bar";
-import {StyleSheet, Text, View, Button, SafeAreaView, ScrollView, Image, TouchableOpacity} from "react-native";
+import {
+  CheckBox,
+  StyleSheet,
+  Text,
+  View,
+  Button,
+  SafeAreaView,
+  ScrollView,
+  Image,
+  TouchableOpacity,
+} from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { Section, TableView } from "react-native-tableview-simple";
@@ -7,8 +17,9 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import React from "react";
 import UserData from "./userdata.json";
 import LogInfo from "./log.json";
-import {ClimbingLogCell} from './components/ClimbingLogCell.js';
+import { ClimbingLogCell } from "./components/ClimbingLogCell.js";
 import { GoalItem } from "./components/GoalComp";
+import { Picker } from "@react-native-picker/picker";
 
 const Stack = createNativeStackNavigator();
 
@@ -72,16 +83,10 @@ function Goals({ navigation }) {
         source={require("./assets/GrypLogoWhite.png")}
       />
       <TouchableOpacity style={styles.newGoal}>
-        <Text style={styles.newGoalText} >New Goal</Text>
+        <Text style={styles.newGoalText}>New Goal</Text>
       </TouchableOpacity>
-      <GoalItem
-        date = {"2023-02-02"}
-        text={"goal1"}
-      />
-      <GoalItem
-        date = {"2023-03-05"}
-        text={"goal2"}
-      />
+      <GoalItem date={"2023-02-02"} text={"goal1"} />
+      <GoalItem date={"2023-03-05"} text={"goal2"} />
     </ScrollView>
   );
 }
@@ -106,22 +111,79 @@ function ClimbingLogScreen({ navigation }) {
         source={require("./assets/GrypLogoWhite.png")}
       />
       <TableView>
-        {LogInfo.Climbing_logs.map((section, i) => (
+        {LogInfo.Climbing_logs.reverse().map((section, i) => (
           <Section
             name={"climbing log"}
             hideSeparator="true"
-            separatorTintColor={'transparent'}
-            headerComponent>
-              <ClimbingLogCell
-                key={toString(section.index)}
-                logEntryName={section.entry_name}
-                date={section.date}
-                grade={section.grade}
-                logInfo={section.info}
-              />
+            separatorTintColor={"transparent"}
+            headerComponent
+          >
+            <ClimbingLogCell
+              key={i}
+              logEntryName={section.entry_name}
+              date={section.date}
+              grade={section.grade}
+              logInfo={section.info}
+              action={() => navigation.navigate("Menu", section)}
+            />
           </Section>
         ))}
       </TableView>
+    </ScrollView>
+  );
+}
+
+function LogPage({ route, navigation }) {
+  const { k } = route.params;
+  const { name } = LogInfo.Climbing_logs.entry_name;
+  const { date } = LogInfo.Climbing_logs.date;
+  const { info } = LogInfo.Climbing_logs.info;
+  const { image } = LogInfo.Climbing_logs.imagePath;
+  const { grade, setGrade } = useState(LogInfo.Climbing_logs.grade);
+  const [isCompleted, setCompleted] = useState(LogInfo.Climbing_logs.completed);
+
+  return (
+    <ScrollView style={styles.scrollStyle}>
+      <View>
+        <TextInput
+          onChangeText={async (name) => {
+            onChangeText(name);
+          }}
+          value={name}
+          placeholder={"log " + k}
+        />
+        <Picker
+          selectedValue={grade}
+          onValueChange={(itemValue, itemIndex) => setGrade(itemValue)}
+        >
+          <Picker.Item label="V1" value="V1" />
+          <Picker.Item label="V2" value="V2" />
+          <Picker.Item label="V3" value="V3" />
+          <Picker.Item label="V4" value="V4" />
+          <Picker.Item label="V5" value="V5" />
+          <Picker.Item label="V6" value="V6" />
+          <Picker.Item label="V7" value="V7" />
+          <Picker.Item label="V8" value="V8" />
+          <Picker.Item label="V9" value="V9" />
+          <Picker.Item label="V10" value="V10" />
+          <Picker.Item label="V11" value="V11" />
+        </Picker>
+        <View style={styles.checkboxContainer}>
+          <Text> Route Completed </Text>
+          <CheckBox
+            value={isCompleted}
+            onValueChange={setCompleted}
+            style={styles.checkbox}
+          />
+        </View>
+      </View>
+      <View style={styles.basketView}>
+        <Button
+          style={styles.basketbutton}
+          title="Save changes"
+          onPress={() => {}}
+        />
+      </View>
     </ScrollView>
   );
 }
@@ -135,6 +197,7 @@ export default function App() {
         <Stack.Screen name="Setting" component={Settings} />
         <Stack.Screen name="ClimbingLogScreen" component={ClimbingLogScreen} />
         <Stack.Screen name="Goals" component={Goals} />
+        <Stack.Screen name="LogPage" component={LogPage} />
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -186,11 +249,18 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     borderRadius: 10,
     alignSelf: "center",
-    marginBottom: 10
+    marginBottom: 10,
   },
 
   newGoalText: {
     fontSize: 18,
-    textAlign: 'center'
+    textAlign: "center",
+  },
+  checkboxContainer: {
+    flexDirection: "row",
+    marginBottom: 20,
+  },
+  checkbox: {
+    alignSelf: "center",
   },
 });

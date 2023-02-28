@@ -10,22 +10,22 @@ import {
 
 
 const ClimbingLogCell = (props) => (
-    <Cell
-      {...props}
-      backgroundColor='transparent'
-      cellContentView={
-        <TouchableOpacity style={styles.logCell}>
-          <View style={styles.logName}>
-            <Text style={styles.logTitle}>{props.logEntryName} </Text>
-            <Text>Grade: {props.grade}</Text>
-            <Text>Date:{props.date}</Text>
-          </View>
-          <View style={styles.logInfo}>
-            <Text>{props.logInfo}</Text>
-          </View>
-        </TouchableOpacity>
-      }
-    />
+
+  <Cell
+    {...props}
+    backgroundColor='transparent'
+    cellContentView={
+      <TouchableOpacity style={styles.logCell}>
+        <View style={styles.logName}>
+          <Text style={styles.logTitle}>{props.logEntryName} </Text>
+          <Text>Grade: {props.grade}</Text>
+          <Text>Date:{props.date}</Text>
+        </View>
+        <View style={styles.logInfo}>
+          <Text>{props.logInfo}</Text>
+        </View>
+      </TouchableOpacity>
+    }/>
   );
 
   const styles = StyleSheet.create({

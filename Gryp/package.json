@@ -28,7 +28,8 @@
     "react-native-tableview-simple": "^4.4.0",
     "react-native-web": "~0.18.9",
     "react-navigation": "^4.4.4",
-    "expo-camera": "~13.1.0"
+    "expo-camera": "~13.1.0",
+    "@react-native-picker/picker": "2.4.8"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9"

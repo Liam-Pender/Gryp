@@ -124,7 +124,7 @@ function ClimbingLogScreen({ navigation }) {
               date={section.date}
               grade={section.grade}
               logInfo={section.info}
-              action={() => navigation.navigate("Menu", section)}
+              action={() => navigation.navigate("LogPage", section)}
             />
           </Section>
         ))}
@@ -152,6 +152,7 @@ function LogPage({ route, navigation }) {
           value={name}
           placeholder={"log " + k}
         />
+        <Text>{date}</Text>
         <Picker
           selectedValue={grade}
           onValueChange={(itemValue, itemIndex) => setGrade(itemValue)}
@@ -176,6 +177,15 @@ function LogPage({ route, navigation }) {
             style={styles.checkbox}
           />
         </View>
+        <ScrollView>
+          <TextInput
+            onChangeText={async (info) => {
+              onChangeText(info);
+            }}
+            value={info}
+            placeholder={""}
+          />
+        </ScrollView>
       </View>
       <View style={styles.basketView}>
         <Button
@@ -262,5 +272,12 @@ const styles = StyleSheet.create({
   },
   checkbox: {
     alignSelf: "center",
+  },
+  infoScroll: {
+    backgroundColor: "white",
+    alignItems: "center",
+    justifyContent: "center",
+    width: "90%",
+    height: 100,
   },
 });

@@ -136,7 +136,6 @@ function ClimbingLogScreen({ navigation }) {
 }
 
 function LogPage({ route, navigation }) {
-  
   const { k } = route.params;
   const [name, setName] = useState(LogInfo.Climbing_logs[k].entry_name);
   const [date, setDate] = useState(LogInfo.Climbing_logs[k].date);

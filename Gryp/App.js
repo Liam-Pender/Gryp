@@ -37,36 +37,54 @@ function HomeScreen({ navigation }) {
         style={styles.homeImage}
         source={require("./assets/homeClimb.jpg")}
       />
-      <TouchableOpacity
-        style={styles.homeScreenTouchable}
-        onPress={() => navigation.navigate("Calendar")}
-      >
-        <ImageBackground source={require("./assets/gym.png")}>
-          <Text style={styles.text}>Training</Text>
-        </ImageBackground>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={styles.homeScreenTouchable}
-        onPress={() => navigation.navigate("ClimbingLogScreen")}
-      >
-        <ImageBackground source={require("./assets/logImage.jpg")}>
-          <Text style={styles.text}>Climbing Log</Text>
-        </ImageBackground>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={styles.homeScreenTouchable}
-        onPress={() => navigation.navigate("Goals")}
-      >
-        <ImageBackground source={require("./assets/goals.jpg")}>
-          <Text style={styles.text}>Goals</Text>
-        </ImageBackground>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={styles.homeScreenTouchable}
-        onPress={() => navigation.navigate("Setting")}
-      >
-        <Text style={{ textAlign: "center" }}>Settings</Text>
-      </TouchableOpacity>
+
+      <View style={styles.homeScreenCells}>
+        <TouchableOpacity
+          style={styles.homeScreenTouchable}
+          onPress={() => navigation.navigate("Calendar")}
+        >
+          <ImageBackground
+            style={styles.homePageImages}
+            source={require("./assets/gym.png")}
+          />
+          <Text style={styles.homeCellText}>Training</Text>
+        </TouchableOpacity>
+      </View>
+
+      <View style={styles.homeScreenCells}>
+        <TouchableOpacity
+          style={styles.homeScreenTouchable}
+          onPress={() => navigation.navigate("ClimbingLogScreen")}
+        >
+          <ImageBackground
+            style={styles.homePageImages}
+            source={require("./assets/logImage.jpg")}
+          />
+          <Text style={styles.homeCellText}>Climbing Log</Text>
+        </TouchableOpacity>
+      </View>
+
+      <View style={styles.homeScreenCells}>
+        <TouchableOpacity
+          style={styles.homeScreenTouchable}
+          onPress={() => navigation.navigate("Goals")}
+        >
+          <ImageBackground
+            style={styles.homePageImages}
+            source={require("./assets/goals.jpg")}
+          />
+          <Text style={styles.homeCellText}>Goals</Text>
+        </TouchableOpacity>
+      </View>
+
+      <View style={styles.homeScreenCells}>
+        <TouchableOpacity
+          style={styles.homeScreenTouchable}
+          onPress={() => navigation.navigate("Setting")}
+        >
+          <Text style={styles.homeCellText}>Settings</Text>
+        </TouchableOpacity>
+      </View>
       <StatusBar style="auto" />
     </ScrollView>
   );
@@ -156,6 +174,7 @@ function LogPage({ route, navigation }) {
   return (
     <ScrollView style={styles.logStyle}>
       <View>
+        <Text> Log Name</Text>
         <TextInput
           style={styles.logNameText}
           onChangeText={async (name) => {
@@ -164,7 +183,10 @@ function LogPage({ route, navigation }) {
           value={name}
           placeholder={"log " + k}
         />
-        <Text style={styles.dateText}>{date}</Text>
+        <View style={{ flexDirection: "row" }}>
+          <Text style={styles.dateText}>{date}</Text>
+        </View>
+
         <View style={styles.pickerView}>
           <Picker
             style={styles.dropdown}
@@ -257,15 +279,18 @@ const styles = StyleSheet.create({
     backgroundColor: "#F5F5F5",
   },
   homeScreenTouchable: {
-    alignSelf: "center",
+    width: "100%",
+    height: "100%",
+  },
+  homeScreenCells: {
+    backgroundColor: "white",
     width: "90%",
     height: 100,
-    backgroundColor: "lightgray",
     marginBottom: 10,
     marginVertical: 10,
     borderRadius: 10,
+    alignSelf: "center",
   },
-
   logo: {
     alignSelf: "center",
     width: 100,
@@ -346,5 +371,19 @@ const styles = StyleSheet.create({
   saveButton: {
     justifyContent: "center",
     margin: 10,
+  },
+  homePageImages: {
+    height: "100%",
+    width: "100%",
+    opacity: 0.4,
+    position: "absolute",
+    borderRadius: 10,
+    resizeMode: "contain",
+    overflow: "hidden",
+  },
+  homeCellText: {
+    fontSize: 40,
+    textAlign: "center",
+    textAlignVertical: "center",
   },
 });

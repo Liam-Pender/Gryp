@@ -141,6 +141,8 @@ function Calendar({ navigation }) {
 function Goals({ navigation }) {
   let [list, setList] = useState("");
 
+  //idea, send data through arguments instead of the async thing
+
   const goalList = async () => {
     try {
       const goalJson = await AsyncStorage.getItem("@GoalList");

@@ -9,6 +9,7 @@ import {
   ScrollView,
   Image,
   TouchableOpacity,
+  ImageBackground,
 } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -34,25 +35,31 @@ function HomeScreen({ navigation }) {
       />
       <Image
         style={styles.homeImage}
-        source={require("./assets/homeClimb.png")}
+        source={require("./assets/homeClimb.jpg")}
       />
       <TouchableOpacity
         style={styles.homeScreenTouchable}
         onPress={() => navigation.navigate("Calendar")}
       >
-        <Text style={{ textAlign: "center" }}>Calendar</Text>
+        <ImageBackground source={require("./assets/gym.png")}>
+          <Text style={styles.text}>Training</Text>
+        </ImageBackground>
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.homeScreenTouchable}
         onPress={() => navigation.navigate("ClimbingLogScreen")}
       >
-        <Text style={{ textAlign: "center" }}>Climbing Log</Text>
+        <ImageBackground source={require("./assets/logImage.jpg")}>
+          <Text style={styles.text}>Climbing Log</Text>
+        </ImageBackground>
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.homeScreenTouchable}
         onPress={() => navigation.navigate("Goals")}
       >
-        <Text style={{ textAlign: "center" }}>Goals</Text>
+        <ImageBackground source={require("./assets/goals.jpg")}>
+          <Text style={styles.text}>Goals</Text>
+        </ImageBackground>
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.homeScreenTouchable}
@@ -136,7 +143,6 @@ function ClimbingLogScreen({ navigation }) {
 }
 
 function LogPage({ route, navigation }) {
-  
   const { k } = route.params;
   const [name, setName] = useState(LogInfo.Climbing_logs[k].entry_name);
   const [date, setDate] = useState(LogInfo.Climbing_logs[k].date);

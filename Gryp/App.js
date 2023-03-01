@@ -15,7 +15,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { Section, TableView } from "react-native-tableview-simple";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import UserData from "./userdata.json";
 import LogInfo from "./log.json";
 import { ClimbingLogCell } from "./components/ClimbingLogCell.js";
@@ -23,8 +23,44 @@ import { GoalItem } from "./components/GoalComp";
 import { Picker } from "@react-native-picker/picker";
 import CheckBox from "expo-checkbox";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import Spinner from "react-native-loading-spinner-overlay";
 
 const Stack = createNativeStackNavigator();
+const log = JSON.parse(`{
+  "Climbing_logs": [
+    {
+      "entry_name": "This is log 1",
+      "date": "23/04/2022",
+      "info": "Climbed today on a slab, it went well, fell off 3 times, I am now extending the length of this to check multi line printing",
+      "imagePath": "",
+      "grade": "4",
+      "completed": false
+    },
+    {
+      "entry_name": "This is log 2",
+      "date": "",
+      "info": "climbed today on an overhand, fell off 10 times ",
+      "imagePath": "",
+      "grade": "1",
+      "completed": false
+    },
+    {
+      "entry_name": "And this is log 3",
+      "date": "22/03/2022",
+      "info": "blah blah blah",
+      "imagePath": "",
+      "grade": "2",
+      "completed": true
+    }
+  ]
+}`);
+
+const gl = {
+  goal: [
+    { title: "Goal 1", date: "2023/03/23", achieved: "False" },
+    { title: "Goal 2", date: "2023/01/23", achieved: "False" },
+  ],
+};
 
 function HomeScreen({ navigation }) {
   return (
@@ -103,19 +139,52 @@ function Calendar({ navigation }) {
 }
 
 function Goals({ navigation }) {
-  return (
-    <ScrollView style={styles.scrollStyle}>
-      <Image
-        style={styles.logo}
-        source={require("./assets/GrypLogoWhite.png")}
-      />
-      <TouchableOpacity style={styles.newGoal}>
-        <Text style={styles.newGoalText}>New Goal</Text>
-      </TouchableOpacity>
-      <GoalItem date={"2023-02-02"} text={"goal1"} />
-      <GoalItem date={"2023-03-05"} text={"goal2"} />
-    </ScrollView>
-  );
+  let [list, setList] = useState("");
+
+  const goalList = async () => {
+    try {
+      const goalJson = await AsyncStorage.getItem("@GoalList");
+      setList(JSON.parse(goalJson));
+    } catch (e) {}
+  };
+
+  useEffect(() => {
+    async () => {
+      await goalList();
+      console.log(list);
+    };
+  });
+
+  if (list != "") {
+    return (
+      <ScrollView style={styles.scrollStyle}>
+        <Image
+          style={styles.logo}
+          source={require("./assets/GrypLogoWhite.png")}
+        />
+        <TouchableOpacity style={styles.newGoal}>
+          <Text style={styles.newGoalText}>New Goal</Text>
+        </TouchableOpacity>
+        {list.goal.map((elem, i) => (
+          <GoalItem key={i} />
+        ))}
+      </ScrollView>
+    );
+  } else {
+    return (
+      <ScrollView style={styles.scrollStyle}>
+        <Image
+          style={styles.logo}
+          source={require("./assets/GrypLogoWhite.png")}
+        />
+        <Spinner
+          visible={true}
+          textContent={"Loading..."}
+          textStyle={{ color: "#FFF" }}
+        />
+      </ScrollView>
+    );
+  }
 }
 
 function Settings({ navigation }) {
@@ -246,6 +315,40 @@ function LogPage({ route, navigation }) {
 }
 
 export default function App() {
+  useEffect(() => {
+    AsyncStorage.clear();
+  });
+
+  useEffect(() => {
+    (async () => {
+      let t = await AsyncStorage.getItem("@LogInfo");
+      // console.log("log = " + t);
+      if (t == null) {
+        try {
+          const jsonValueLog = JSON.stringify(log);
+          await AsyncStorage.setItem("@LogInfo", jsonValueLog);
+        } catch (e) {
+          console.log("error with log saving: " + e);
+        }
+      }
+    })();
+  }, []);
+
+  useEffect(() => {
+    (async () => {
+      let g = await AsyncStorage.getItem("@GoalList");
+      // console.log("goal list = " + g);
+      if (g == null) {
+        try {
+          const jsonValueGoal = JSON.stringify(gl);
+          await AsyncStorage.setItem("@GoalList", jsonValueGoal);
+        } catch (e) {
+          console.log("error with log saving: " + e);
+        }
+      }
+    })();
+  }, []);
+
   return (
     <NavigationContainer>
       <Stack.Navigator>
@@ -304,7 +407,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     width: "100%",
     marginVertical: 10,
-    height: 200,
+    height: 150,
   },
 
   newGoal: {

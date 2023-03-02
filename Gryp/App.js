@@ -26,34 +26,34 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import Spinner from "react-native-loading-spinner-overlay";
 
 const Stack = createNativeStackNavigator();
-const log = JSON.parse(`{
-  "Climbing_logs": [
+const log = {
+  Climbing_logs: [
     {
-      "entry_name": "This is log 1",
-      "date": "23/04/2022",
-      "info": "Climbed today on a slab, it went well, fell off 3 times, I am now extending the length of this to check multi line printing",
-      "imagePath": "",
-      "grade": "4",
-      "completed": false
+      entry_name: "This is log 1",
+      date: "23/04/2022",
+      info: "Climbed today on a slab, it went well, fell off 3 times, I am now extending the length of this to check multi line printing",
+      imagePath: "",
+      grade: "4",
+      completed: false,
     },
     {
-      "entry_name": "This is log 2",
-      "date": "",
-      "info": "climbed today on an overhand, fell off 10 times ",
-      "imagePath": "",
-      "grade": "1",
-      "completed": false
+      entry_name: "This is log 2",
+      date: "",
+      info: "climbed today on an overhand, fell off 10 times ",
+      imagePath: "",
+      grade: "1",
+      completed: false,
     },
     {
-      "entry_name": "And this is log 3",
-      "date": "22/03/2022",
-      "info": "blah blah blah",
-      "imagePath": "",
-      "grade": "2",
-      "completed": true
-    }
-  ]
-}`);
+      entry_name: "And this is log 3",
+      date: "22/03/2022",
+      info: "blah blah blah",
+      imagePath: "",
+      grade: "2",
+      completed: true,
+    },
+  ],
+};
 
 const gl = {
   goal: [
@@ -138,55 +138,48 @@ function Calendar({ navigation }) {
   );
 }
 
-function Goals({ navigation }) {
-  let [list, setList] = useState("");
-
+async function Goals({ navigation }) {
+  // let [list, setList] = useState("");
   //idea, send data through arguments instead of the async thing
-
-  const goalList = async () => {
-    try {
-      const goalJson = await AsyncStorage.getItem("@GoalList");
-      setList(JSON.parse(goalJson));
-    } catch (e) {}
-  };
-
-  useEffect(() => {
-    async () => {
-      await goalList();
-      console.log(list);
-    };
-  });
-
-  if (list != "") {
-    return (
-      <ScrollView style={styles.scrollStyle}>
-        <Image
-          style={styles.logo}
-          source={require("./assets/GrypLogoWhite.png")}
-        />
-        <TouchableOpacity style={styles.newGoal}>
-          <Text style={styles.newGoalText}>New Goal</Text>
-        </TouchableOpacity>
-        {list.goal.map((elem, i) => (
-          <GoalItem key={i} />
-        ))}
-      </ScrollView>
-    );
-  } else {
-    return (
-      <ScrollView style={styles.scrollStyle}>
-        <Image
-          style={styles.logo}
-          source={require("./assets/GrypLogoWhite.png")}
-        />
-        <Spinner
-          visible={true}
-          textContent={"Loading..."}
-          textStyle={{ color: "#FFF" }}
-        />
-      </ScrollView>
-    );
-  }
+  // const goalList = async () => {
+  //   try {
+  //     const goalJson = await AsyncStorage.getItem("@GoalList");
+  //     setList(JSON.parse(goalJson));
+  //   } catch (e) {}
+  // };
+  // const goalList = async () => {
+  //   try {
+  //     const goalJson = await AsyncStorage.getItem("@GoalList");
+  //     return JSON.parse(goalJson);
+  //   } catch (e) {}
+  // };
+  // useEffect(() => {
+  //   async () => {
+  //     await goalList();
+  //     console.log(list);
+  //   };
+  // });
+  // return (
+  //   <ScrollView style={styles.scrollStyle}>
+  //     <Image
+  //       style={styles.logo}
+  //       source={require("./assets/GrypLogoWhite.png")}
+  //     />
+  //     <TouchableOpacity style={styles.newGoal}>
+  //       <Text style={styles.newGoalText}>New Goal</Text>
+  //     </TouchableOpacity>
+  //   </ScrollView>
+  // );
+  // {setList(await goalList())}
+  //     {console.log("list = " + list)}
+  // {list.goal.map((item, i) => (
+  //   <GoalItem
+  //     title={item.title}
+  //     date={item.date}
+  //     done={item.achieved}
+  //     key={i}
+  //   />
+  // ))}
 }
 
 function Settings({ navigation }) {

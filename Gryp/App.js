@@ -55,12 +55,13 @@ const log = JSON.parse(`{
   ]
 }`);
 
-const gl = {
-  goal: [
-    { title: "Goal 1", date: "2023/03/23", achieved: "False" },
-    { title: "Goal 2", date: "2023/01/23", achieved: "False" },
-  ],
-};
+const gljson = `{
+  "goal": [
+    { "title": "Goal 1", "date": "2023/03/23", "achieved": false },
+    { "title": "Goal 2", "date": "2023/01/23", "achieved": false }
+  ]
+}`;
+const gl = JSON.parse(gljson);
 
 function HomeScreen({ navigation }) {
   return (
@@ -138,55 +139,44 @@ function Calendar({ navigation }) {
   );
 }
 
-function Goals({ navigation }) {
-  let [list, setList] = useState("");
-
-  //idea, send data through arguments instead of the async thing
-
-  const goalList = async () => {
-    try {
-      const goalJson = await AsyncStorage.getItem("@GoalList");
-      setList(JSON.parse(goalJson));
-    } catch (e) {}
-  };
-
-  useEffect(() => {
-    async () => {
-      await goalList();
-      console.log(list);
-    };
-  });
-
-  if (list != "") {
-    return (
-      <ScrollView style={styles.scrollStyle}>
-        <Image
-          style={styles.logo}
-          source={require("./assets/GrypLogoWhite.png")}
-        />
-        <TouchableOpacity style={styles.newGoal}>
-          <Text style={styles.newGoalText}>New Goal</Text>
-        </TouchableOpacity>
-        {list.goal.map((elem, i) => (
-          <GoalItem key={i} />
-        ))}
-      </ScrollView>
-    );
-  } else {
-    return (
-      <ScrollView style={styles.scrollStyle}>
-        <Image
-          style={styles.logo}
-          source={require("./assets/GrypLogoWhite.png")}
-        />
-        <Spinner
-          visible={true}
-          textContent={"Loading..."}
-          textStyle={{ color: "#FFF" }}
-        />
-      </ScrollView>
-    );
+async function _getValues(key) {
+  try {
+    const goalJson = await AsyncStorage.getItem(key);
+    return goalJson;
+  } catch (e) {
+    console.log("failed to laod");
   }
+}
+
+function Goals({ navigation }) {
+  return (
+    <ScrollView style={styles.scrollStyle}>
+      <Image
+        style={styles.logo}
+        source={require("./assets/GrypLogoWhite.png")}
+      />
+      <TouchableOpacity style={styles.newGoal}>
+        <Text style={styles.newGoalText}>New Goal</Text>
+      </TouchableOpacity>
+
+      <GoalItem key={2} date={"2023-02-02"} title={"test 1"} achieved={true} />
+      <GoalItem key={3} date={"2023-03-05"} title={"test 2"} achieved={false} />
+    </ScrollView>
+  );
+
+  // figure out how to implement this?
+
+  // {_getValues("@GoalList").then((res) => {
+  //   console.log(JSON.parse(res).goal);
+  //   /**JSON.parse(res).goal.map((item, i) => {
+  //     <GoalItem
+  //       key={i}
+  //       date={item.date}
+  //       title={item.title}
+  //       achieved={item.achieved}
+  //     />;
+  //   });*/
+  // })}
 }
 
 function Settings({ navigation }) {
@@ -317,9 +307,9 @@ function LogPage({ route, navigation }) {
 }
 
 export default function App() {
-  useEffect(() => {
-    AsyncStorage.clear();
-  });
+  // useEffect(() => {
+  //   AsyncStorage.clear();
+  // });
 
   useEffect(() => {
     (async () => {
@@ -339,7 +329,6 @@ export default function App() {
   useEffect(() => {
     (async () => {
       let g = await AsyncStorage.getItem("@GoalList");
-      // console.log("goal list = " + g);
       if (g == null) {
         try {
           const jsonValueGoal = JSON.stringify(gl);

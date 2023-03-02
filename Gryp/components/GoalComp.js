@@ -5,28 +5,15 @@ import GoalList from "../goalList.json";
 import CheckBox from "expo-checkbox";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-/** ok so it's gonna work like this, the index of the goal will
- *  be passed to the comp, then it's pressed the comp will
- *  find the goal with that index and set the "done" to true*/
-
 const GoalItem = (props) => {
-  let [item, setItem] = useState("");
-
-  const goalItem = async () => {
-    try {
-      const goalJson = await AsyncStorage.getItem("@GoalList");
-      let temp = JSON.parse(goalJson);
-      setItem(temp.goal[props.key]);
-    } catch (e) {}
-  };
-  goalItem();
-  console.log("item " + props.key + " = " + item);
+  console.log(props.key);
+  console.log("item " + props.key + " = " + props.title);
 
   today = new Date().getTime();
 
-  deadline = new Date(item.date).getTime();
+  deadline = new Date(props.date).getTime();
 
-  const [isCompleted, setIsCompleted] = useState(g.goal[props.key].achieved);
+  const [isCompleted, setIsCompleted] = useState(props.achieved);
 
   if (deadline < today && isCompleted == false) {
     return (
@@ -36,7 +23,7 @@ const GoalItem = (props) => {
           onValueChange={setIsCompleted}
           style={styles.tickBox}
         />
-        <Text style={styles.goalText}>{g.goal[props.key].title}</Text>
+        <Text style={styles.goalText}>{props.title}</Text>
       </View>
     );
   } else if (isCompleted == false) {
@@ -47,7 +34,7 @@ const GoalItem = (props) => {
           onValueChange={setIsCompleted}
           style={styles.tickBox}
         />
-        <Text style={styles.goalText}>{props.text}</Text>
+        <Text style={styles.goalText}>{props.title}</Text>
       </View>
     );
   } else {
@@ -58,7 +45,7 @@ const GoalItem = (props) => {
           onValueChange={setIsCompleted}
           style={styles.tickBox}
         />
-        <Text style={styles.goalText}>{props.text}</Text>
+        <Text style={styles.goalText}>{props.title}</Text>
       </View>
     );
   }

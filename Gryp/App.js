@@ -9,21 +9,62 @@ import {
   ScrollView,
   Image,
   TouchableOpacity,
+  ImageBackground,
 } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { Section, TableView } from "react-native-tableview-simple";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import React, { useState } from "react";
+// import AsyncStorage from "@react-native-community/async-storage";
+import React, { useEffect, useState } from "react";
 import UserData from "./userdata.json";
 import LogInfo from "./log.json";
+import JsonGoals from "./goalList.json";
 import { ClimbingLogCell } from "./components/ClimbingLogCell.js";
 import { GoalItem } from "./components/GoalComp";
 import { Picker } from "@react-native-picker/picker";
 import CheckBox from "expo-checkbox";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import Spinner from "react-native-loading-spinner-overlay";
 
 const Stack = createNativeStackNavigator();
+const log = JSON.parse(`{
+  "Climbing_logs": [
+    {
+      "entry_name": "This is log 1",
+      "date": "23/04/2022",
+      "info": "Climbed today on a slab, it went well, fell off 3 times, I am now extending the length of this to check multi line printing",
+      "imagePath": "",
+      "grade": "4",
+      "completed": false
+    },
+    {
+      "entry_name": "This is log 2",
+      "date": "",
+      "info": "climbed today on an overhand, fell off 10 times ",
+      "imagePath": "",
+      "grade": "1",
+      "completed": false
+    },
+    {
+      "entry_name": "And this is log 3",
+      "date": "22/03/2022",
+      "info": "blah blah blah",
+      "imagePath": "",
+      "grade": "2",
+      "completed": true
+    }
+  ]
+}`);
+
+const gljson = {
+  goal: [
+    { title: "Goal 1", date: "2023/03/23", achieved: false },
+    { title: "Goal 2", date: "2023/01/23", achieved: false },
+  ],
+};
+
+// const gl = JSON.parse(gljson);
 
 function HomeScreen({ navigation }) {
   return (
@@ -34,32 +75,56 @@ function HomeScreen({ navigation }) {
       />
       <Image
         style={styles.homeImage}
-        source={require("./assets/homeClimb.png")}
+        source={require("./assets/homeClimb.jpg")}
       />
-      <TouchableOpacity
-        style={styles.homeScreenTouchable}
-        onPress={() => navigation.navigate("Calendar")}
-      >
-        <Text style={{ textAlign: "center" }}>Calendar</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={styles.homeScreenTouchable}
-        onPress={() => navigation.navigate("ClimbingLogScreen")}
-      >
-        <Text style={{ textAlign: "center" }}>Climbing Log</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={styles.homeScreenTouchable}
-        onPress={() => navigation.navigate("Goals")}
-      >
-        <Text style={{ textAlign: "center" }}>Goals</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={styles.homeScreenTouchable}
-        onPress={() => navigation.navigate("Setting")}
-      >
-        <Text style={{ textAlign: "center" }}>Settings</Text>
-      </TouchableOpacity>
+
+      <View style={styles.homeScreenCells}>
+        <TouchableOpacity
+          style={styles.homeScreenTouchable}
+          onPress={() => navigation.navigate("Calendar")}
+        >
+          <ImageBackground
+            style={styles.homePageImages}
+            source={require("./assets/gym.png")}
+          />
+          <Text style={styles.homeCellText}>Training</Text>
+        </TouchableOpacity>
+      </View>
+
+      <View style={styles.homeScreenCells}>
+        <TouchableOpacity
+          style={styles.homeScreenTouchable}
+          onPress={() => navigation.navigate("ClimbingLogScreen")}
+        >
+          <ImageBackground
+            style={styles.homePageImages}
+            source={require("./assets/logImage.jpg")}
+          />
+          <Text style={styles.homeCellText}>Climbing Log</Text>
+        </TouchableOpacity>
+      </View>
+
+      <View style={styles.homeScreenCells}>
+        <TouchableOpacity
+          style={styles.homeScreenTouchable}
+          onPress={() => navigation.navigate("Goals")}
+        >
+          <ImageBackground
+            style={styles.homePageImages}
+            source={require("./assets/goals.jpg")}
+          />
+          <Text style={styles.homeCellText}>Goals</Text>
+        </TouchableOpacity>
+      </View>
+
+      <View style={styles.homeScreenCells}>
+        <TouchableOpacity
+          style={styles.homeScreenTouchable}
+          onPress={() => navigation.navigate("Setting")}
+        >
+          <Text style={styles.homeCellText}>Settings</Text>
+        </TouchableOpacity>
+      </View>
       <StatusBar style="auto" />
     </ScrollView>
   );
@@ -77,19 +142,81 @@ function Calendar({ navigation }) {
   );
 }
 
+async function _getValues(k) {
+  try {
+    const goalJson = await AsyncStorage.getItem(k);
+    return JSON.parse(goalJson).goal;
+  } catch (e) {
+    console.log("failed to laod: " + e);
+  }
+}
+
 function Goals({ navigation }) {
+  const [goalArr, setGoalArr] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await _getValues("@GoalList");
+      setGoalArr(data);
+    };
+    fetchData();
+  }, []);
+
   return (
     <ScrollView style={styles.scrollStyle}>
       <Image
         style={styles.logo}
         source={require("./assets/GrypLogoWhite.png")}
       />
-      <TouchableOpacity style={styles.newGoal}>
+      <TouchableOpacity
+        style={styles.newGoal}
+        onPress={() => navigation.navigate("New goal")}
+      >
         <Text style={styles.newGoalText}>New Goal</Text>
       </TouchableOpacity>
-      <GoalItem date={"2023-02-02"} text={"goal1"} />
-      <GoalItem date={"2023-03-05"} text={"goal2"} />
+      {goalArr.map((item, i) => (
+        <GoalItem
+          key={i}
+          k={i}
+          date={item.date}
+          title={item.title}
+          achieved={item.achieved}
+        />
+      ))}
+      <GoalItem k={5} date={"2023/03/23"} title={"test"} achieved={true} />
     </ScrollView>
+  );
+}
+
+function NewGoal({ navigation }) {
+  const [name, setName] = useState("");
+  const [date, setDate] = useState(new Date());
+  const [mode, setMode] = useState("date");
+  const [show, setShow] = useState(false);
+
+  const onChange = (event, selectedDate) => {
+    const currentDate = selectedDate || date;
+  };
+
+  const showMode = (currentMode) => {
+    setMode(currentMode);
+    setShow(true);
+  };
+
+  return (
+    <View style={styles.scrollStyle}>
+      <Text>Goal</Text>
+      <TextInput
+        style={styles.logNameText}
+        onChangeText={async (name) => {
+          setName(name);
+        }}
+        value={name}
+        placeholder={""}
+      />
+      <Text>Deadline Date</Text>
+      <DateTimePicker></DateTimePicker>
+    </View>
   );
 }
 
@@ -136,7 +263,6 @@ function ClimbingLogScreen({ navigation }) {
 }
 
 function LogPage({ route, navigation }) {
-  
   const { k } = route.params;
   const [name, setName] = useState(LogInfo.Climbing_logs[k].entry_name);
   const [date, setDate] = useState(LogInfo.Climbing_logs[k].date);
@@ -150,6 +276,7 @@ function LogPage({ route, navigation }) {
   return (
     <ScrollView style={styles.logStyle}>
       <View>
+        <Text> Log Name</Text>
         <TextInput
           style={styles.logNameText}
           onChangeText={async (name) => {
@@ -158,7 +285,10 @@ function LogPage({ route, navigation }) {
           value={name}
           placeholder={"log " + k}
         />
-        <Text style={styles.dateText}>{date}</Text>
+        <View style={{ flexDirection: "row" }}>
+          <Text style={styles.dateText}>{date}</Text>
+        </View>
+
         <View style={styles.pickerView}>
           <Picker
             style={styles.dropdown}
@@ -218,6 +348,40 @@ function LogPage({ route, navigation }) {
 }
 
 export default function App() {
+  useEffect(() => {
+    AsyncStorage.clear();
+  });
+
+  useEffect(() => {
+    (async () => {
+      let t = await AsyncStorage.getItem("@LogInfo");
+      // console.log("log = " + t);
+      if (t == null) {
+        try {
+          const jsonValueLog = JSON.stringify(log);
+          await AsyncStorage.setItem("@LogInfo", jsonValueLog);
+        } catch (e) {
+          console.log("error with log saving: " + e);
+        }
+      }
+    })();
+  }, []);
+
+  useEffect(() => {
+    (async () => {
+      let g = await AsyncStorage.getItem("@GoalList");
+      if (g == null) {
+        try {
+          // const jsonValueGoal = JSON.stringify();
+          // await AsyncStorage.setItem("@GoalList", jsonValueGoal);
+          await AsyncStorage.setItem("@GoalList", JSON.stringify(gljson));
+        } catch (e) {
+          console.log("error with log saving: " + e);
+        }
+      }
+    })();
+  }, []);
+
   return (
     <NavigationContainer>
       <Stack.Navigator>
@@ -227,6 +391,7 @@ export default function App() {
         <Stack.Screen name="ClimbingLogScreen" component={ClimbingLogScreen} />
         <Stack.Screen name="Goals" component={Goals} />
         <Stack.Screen name="LogPage" component={LogPage} />
+        <Stack.Screen name="New goal" component={NewGoal} />
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -251,15 +416,18 @@ const styles = StyleSheet.create({
     backgroundColor: "#F5F5F5",
   },
   homeScreenTouchable: {
-    alignSelf: "center",
+    width: "100%",
+    height: "100%",
+  },
+  homeScreenCells: {
+    backgroundColor: "white",
     width: "90%",
     height: 100,
-    backgroundColor: "lightgray",
     marginBottom: 10,
     marginVertical: 10,
     borderRadius: 10,
+    alignSelf: "center",
   },
-
   logo: {
     alignSelf: "center",
     width: 100,
@@ -273,7 +441,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     width: "100%",
     marginVertical: 10,
-    height: 200,
+    height: 150,
   },
 
   newGoal: {
@@ -340,5 +508,19 @@ const styles = StyleSheet.create({
   saveButton: {
     justifyContent: "center",
     margin: 10,
+  },
+  homePageImages: {
+    height: "100%",
+    width: "100%",
+    opacity: 0.4,
+    position: "absolute",
+    borderRadius: 10,
+    resizeMode: "contain",
+    overflow: "hidden",
+  },
+  homeCellText: {
+    fontSize: 40,
+    textAlign: "center",
+    textAlignVertical: "center",
   },
 });

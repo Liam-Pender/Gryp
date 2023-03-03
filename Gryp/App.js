@@ -15,6 +15,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { Section, TableView } from "react-native-tableview-simple";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+// import AsyncStorage from "@react-native-community/async-storage";
 import React, { useEffect, useState } from "react";
 import UserData from "./userdata.json";
 import LogInfo from "./log.json";
@@ -56,9 +57,9 @@ const log = JSON.parse(`{
 }`);
 
 const gljson = `{
-  "goal": [
-    { "title": "Goal 1", "date": "2023/03/23", "achieved": false },
-    { "title": "Goal 2", "date": "2023/01/23", "achieved": false }
+  goal: [
+    { title: "Goal 1", date: "2023/03/23", achieved: false },
+    { title: "Goal 2", date: "2023/01/23", achieved: false }
   ]
 }`;
 const gl = JSON.parse(gljson);
@@ -139,13 +140,29 @@ function Calendar({ navigation }) {
   );
 }
 
-async function _getValues(key) {
+async function _getValues(k) {
   try {
-    const goalJson = await AsyncStorage.getItem(key);
+    const goalJson = await AsyncStorage.getItem(k);
+    console.log("getting data: " + goalJson);
     return goalJson;
   } catch (e) {
-    console.log("failed to laod");
+    console.log("failed to laod: " + e);
   }
+}
+
+async function renderGoal() {
+  let data = await _getValues("@GoalList");
+  data = JSON.parse(data);
+  console.log("render goal data JSON: " + data.goal);
+  data.goal.map((item, i) => {
+    
+    // <GoalItem
+    //   key={i}
+    //   date={item.date}
+    //   title={item.title}
+    //   achieved={item.achieved}
+    // />;
+  });
 }
 
 function Goals({ navigation }) {
@@ -155,12 +172,16 @@ function Goals({ navigation }) {
         style={styles.logo}
         source={require("./assets/GrypLogoWhite.png")}
       />
-      <TouchableOpacity style={styles.newGoal}>
+      <TouchableOpacity
+        style={styles.newGoal}
+        onPress={() => navigation.navigate("New goal")}
+      >
         <Text style={styles.newGoalText}>New Goal</Text>
       </TouchableOpacity>
+      {renderGoal()}
 
-      <GoalItem key={2} date={"2023-02-02"} title={"test 1"} achieved={true} />
-      <GoalItem key={3} date={"2023-03-05"} title={"test 2"} achieved={false} />
+      <GoalItem k={2} date={"2023-02-02"} title={"test 1"} achieved={true} />
+      <GoalItem k={3} date={"2023-03-05"} title={"test 2"} achieved={false} />
     </ScrollView>
   );
 
@@ -168,15 +189,47 @@ function Goals({ navigation }) {
 
   // {_getValues("@GoalList").then((res) => {
   //   console.log(JSON.parse(res).goal);
-  //   /**JSON.parse(res).goal.map((item, i) => {
+  //   JSON.parse(res).goal.map((item, i) => {
   //     <GoalItem
   //       key={i}
   //       date={item.date}
   //       title={item.title}
   //       achieved={item.achieved}
   //     />;
-  //   });*/
+  //   });
   // })}
+}
+
+function NewGoal({ navigation }) {
+  const [name, setName] = useState("");
+  const [date, setDate] = useState(new Date());
+  const [mode, setMode] = useState("date");
+  const [show, setShow] = useState(false);
+
+  const onChange = (event, selectedDate) => {
+    const currentDate = selectedDate || date;
+  };
+
+  const showMode = (currentMode) => {
+    setMode(currentMode);
+    setShow(true);
+  };
+
+  return (
+    <View style={styles.scrollStyle}>
+      <Text>Goal</Text>
+      <TextInput
+        style={styles.logNameText}
+        onChangeText={async (name) => {
+          setName(name);
+        }}
+        value={name}
+        placeholder={""}
+      />
+      <Text>Deadline Date</Text>
+      <DateTimePicker></DateTimePicker>
+    </View>
+  );
 }
 
 function Settings({ navigation }) {
@@ -349,6 +402,7 @@ export default function App() {
         <Stack.Screen name="ClimbingLogScreen" component={ClimbingLogScreen} />
         <Stack.Screen name="Goals" component={Goals} />
         <Stack.Screen name="LogPage" component={LogPage} />
+        <Stack.Screen name="New goal" component={NewGoal} />
       </Stack.Navigator>
     </NavigationContainer>
   );

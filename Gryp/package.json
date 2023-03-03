@@ -33,7 +33,8 @@
     "react-native-screens": "~3.18.0",
     "react-native-tableview-simple": "^4.4.0",
     "react-native-web": "~0.18.9",
-    "react-navigation": "^4.4.4"
+    "react-navigation": "^4.4.4",
+    "undefined": "react-native-community/async-storage"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9"

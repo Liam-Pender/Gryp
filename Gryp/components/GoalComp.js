@@ -6,8 +6,6 @@ import CheckBox from "expo-checkbox";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const GoalItem = (props) => {
-  console.log(props.k);
-  console.log("item " + props.k + " = " + props.title);
 
   today = new Date().getTime();
 

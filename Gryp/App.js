@@ -19,6 +19,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useEffect, useState } from "react";
 import UserData from "./userdata.json";
 import LogInfo from "./log.json";
+import JsonGoals from "./goalList.json";
 import { ClimbingLogCell } from "./components/ClimbingLogCell.js";
 import { GoalItem } from "./components/GoalComp";
 import { Picker } from "@react-native-picker/picker";
@@ -56,13 +57,14 @@ const log = JSON.parse(`{
   ]
 }`);
 
-const gljson = `{
+const gljson = {
   goal: [
     { title: "Goal 1", date: "2023/03/23", achieved: false },
-    { title: "Goal 2", date: "2023/01/23", achieved: false }
-  ]
-}`;
-const gl = JSON.parse(gljson);
+    { title: "Goal 2", date: "2023/01/23", achieved: false },
+  ],
+};
+
+// const gl = JSON.parse(gljson);
 
 function HomeScreen({ navigation }) {
   return (
@@ -143,29 +145,23 @@ function Calendar({ navigation }) {
 async function _getValues(k) {
   try {
     const goalJson = await AsyncStorage.getItem(k);
-    console.log("getting data: " + goalJson);
-    return goalJson;
+    return JSON.parse(goalJson).goal;
   } catch (e) {
     console.log("failed to laod: " + e);
   }
 }
 
-async function renderGoal() {
-  let data = await _getValues("@GoalList");
-  data = JSON.parse(data);
-  console.log("render goal data JSON: " + data.goal);
-  data.goal.map((item, i) => {
-    
-    // <GoalItem
-    //   key={i}
-    //   date={item.date}
-    //   title={item.title}
-    //   achieved={item.achieved}
-    // />;
-  });
-}
-
 function Goals({ navigation }) {
+  const [goalArr, setGoalArr] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await _getValues("@GoalList");
+      setGoalArr(data);
+    };
+    fetchData();
+  }, []);
+
   return (
     <ScrollView style={styles.scrollStyle}>
       <Image
@@ -178,26 +174,18 @@ function Goals({ navigation }) {
       >
         <Text style={styles.newGoalText}>New Goal</Text>
       </TouchableOpacity>
-      {renderGoal()}
-
-      <GoalItem k={2} date={"2023-02-02"} title={"test 1"} achieved={true} />
-      <GoalItem k={3} date={"2023-03-05"} title={"test 2"} achieved={false} />
+      {goalArr.map((item, i) => (
+        <GoalItem
+          key={i}
+          k={i}
+          date={item.date}
+          title={item.title}
+          achieved={item.achieved}
+        />
+      ))}
+      <GoalItem k={5} date={"2023/03/23"} title={"test"} achieved={true} />
     </ScrollView>
   );
-
-  // figure out how to implement this?
-
-  // {_getValues("@GoalList").then((res) => {
-  //   console.log(JSON.parse(res).goal);
-  //   JSON.parse(res).goal.map((item, i) => {
-  //     <GoalItem
-  //       key={i}
-  //       date={item.date}
-  //       title={item.title}
-  //       achieved={item.achieved}
-  //     />;
-  //   });
-  // })}
 }
 
 function NewGoal({ navigation }) {
@@ -360,9 +348,9 @@ function LogPage({ route, navigation }) {
 }
 
 export default function App() {
-  // useEffect(() => {
-  //   AsyncStorage.clear();
-  // });
+  useEffect(() => {
+    AsyncStorage.clear();
+  });
 
   useEffect(() => {
     (async () => {
@@ -384,8 +372,9 @@ export default function App() {
       let g = await AsyncStorage.getItem("@GoalList");
       if (g == null) {
         try {
-          const jsonValueGoal = JSON.stringify(gl);
-          await AsyncStorage.setItem("@GoalList", jsonValueGoal);
+          // const jsonValueGoal = JSON.stringify();
+          // await AsyncStorage.setItem("@GoalList", jsonValueGoal);
+          await AsyncStorage.setItem("@GoalList", JSON.stringify(gljson));
         } catch (e) {
           console.log("error with log saving: " + e);
         }

@@ -49,69 +49,123 @@ const Set = (props) => {
   } else {
     if (isCompleted == false) {
       return (
-        <View style={styles.setItemTimer}>
-          <TouchableOpacity
-            style={styles.nameArea}
-            onPress={() => {
-              setIsPlayer(true);
-              let d = new Date();
-              setStartTime(d.getTime() / 1000);
-            }}
-          >
-            <Text style={styles.setText}>{props.name}</Text>
-          </TouchableOpacity>
-          <Countdown
-            startTime={startTime}
-            duration={props.quant}
-            isRunning={isPlaying}
+        <View style={styles.setItem}>
+          <CheckBox
+            value={isCompleted}
+            onValueChange={setCompleted}
+            style={styles.tickBox}
           />
+          <View style={styles.nameArea}>
+            <Text style={styles.setText}>{props.name}</Text>
+          </View>
+          <View style={styles.countView}>
+            <Text style={styles.count}>{props.quant}</Text>
+            <Text>Seconds</Text>
+          </View>
         </View>
       );
     } else if (isCompleted == true) {
       return (
-        <View style={styles.setItemTimerCompleted}>
-          <TouchableOpacity
-            style={styles.nameArea}
-            onPress={() => {
-              setIsPlayer(true);
-              let d = new Date();
-              setStartTime(d.getTime() / 1000);
-            }}
-          >
-            <Text style={styles.setText}>{props.name}</Text>
-          </TouchableOpacity>
-          <Countdown
-            startTime={startTime}
-            duration={props.quant}
-            isRunning={isPlaying}
+        <View style={styles.setItemCompleted}>
+          <CheckBox
+            value={isCompleted}
+            onValueChange={setCompleted}
+            style={styles.tickBox}
           />
+          <View style={styles.nameArea}>
+            <Text style={styles.setText}>{props.name}</Text>
+          </View>
+          <View style={styles.countView}>
+            <Text style={styles.count}>{props.quant}</Text>
+            <Text>Seconds</Text>
+          </View>
         </View>
       );
     }
   }
 };
 
-export const Countdown = (props) => {
-  const [t, setT] = useState(null);
+{
+  /* <Countdown
+            startTime={startTime}
+            duration={props.quant}
+            isRunning={isPlaying}
+          /> */
+}
 
-  if (props.isRunning) {
+// if (isCompleted == false) {
+//   return (
+//     <View style={styles.setItemTimer}>
+//       <TouchableOpacity
+//         style={styles.nameArea}
+//         onPress={() => {
+//           setIsPlayer(true);
+//           let d = new Date();
+//           setStartTime(d.getTime() / 1000);
+//         }}
+//       >
+//         <Text style={styles.setText}>{props.name}</Text>
+//       </TouchableOpacity>
+//       {console.log("blah")}
+//     </View>
+//   );
+
+function t(st, dur) {
+  let d = new Date().getTime() / 1000;
+  let rem = parseInt(st + dur - d);
+  return rem;
+}
+
+// export const Countdown = (props) => {
+//   if (props.isRunning && t(props.startTime, props.duration) > -1) {
+//     return (
+//       <View style={styles.countDownTimer}>
+//         <Text style={styles.setText}>{t(props.startTime, props.duration)}</Text>
+//         <Text style={styles.secondsText}>Seconds remaining</Text>
+//       </View>
+//     );
+//   } else if (props.isRunning == false) {
+//     return (
+//       <View style={styles.countDownTimer}>
+//         <Text style={styles.setText}>{props.duration}</Text>
+//         <Text style={styles.secondsText}>Seconds</Text>
+//       </View>
+//     );
+//   } else if (t(props.startTime, props.duration) < 0) {
+//     return (
+//       <View style={styles.countDownTimer}>
+//         <Text style={styles.setText}>0</Text>
+//         <Text style={styles.secondsText}>Seconds</Text>
+//       </View>
+//     );
+//   }
+// };
+
+function countdown(startTime, duration, isRunning) {
+  console.log("blah");
+  if (isRunning && t(startTime, duration) > -1) {
     return (
-      {setT(parseInt(props.startTime + props.duration) - (new Date().getTime()/1000))}
-      <TouchableOpacity style={styles.countDownTimer}>
-        
-        <Text style={styles.setText}>{t}</Text>
+      <View style={styles.countDownTimer}>
+        <Text style={styles.setText}>{t(startTime, duration)}</Text>
         <Text style={styles.secondsText}>Seconds remaining</Text>
-      </TouchableOpacity>
+      </View>
     );
-  } else {
+  } else if (isRunning == false) {
     return (
-      <TouchableOpacity style={styles.countDownTimer}>
-        <Text style={styles.setText}>{props.duration}</Text>
+      <View style={styles.countDownTimer}>
+        <Text style={styles.setText}>{duration}</Text>
         <Text style={styles.secondsText}>Seconds</Text>
-      </TouchableOpacity>
+      </View>
+    );
+  } else if (t(startTime, duration) < 0) {
+    return (
+      <View style={styles.countDownTimer}>
+        <Text style={styles.setText}>0</Text>
+        <Text style={styles.secondsText}>Seconds</Text>
+      </View>
     );
   }
-};
+}
 
 const styles = StyleSheet.create({
   countDownTimer: {
@@ -185,12 +239,15 @@ const styles = StyleSheet.create({
     height: "100%",
     width: "65%",
     justifyContent: "center",
+    alignContent: "center",
   },
   count: {
     fontSize: 30,
   },
   countView: {
+    flex: 1,
     alignContent: "center",
+    alignItems: "center",
   },
 });
 

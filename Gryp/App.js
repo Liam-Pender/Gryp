@@ -31,39 +31,65 @@ import { WorkOutCell } from "./components/Training";
 import { Set } from "./components/Set";
 
 const Stack = createNativeStackNavigator();
-const log = JSON.parse(`{
-  "Climbing_logs": [
+const log = {
+  Climbing_logs: [
     {
-      "entry_name": "This is log 1",
-      "date": "23/04/2022",
-      "info": "Climbed today on a slab, it went well, fell off 3 times, I am now extending the length of this to check multi line printing",
-      "imagePath": "",
-      "grade": "4",
-      "completed": false
+      entry_name: "This is log 1",
+      date: "23/04/2022",
+      info: "Climbed today on a slab, it went well, fell off 3 times, I am now extending the length of this to check multi line printing",
+      imagePath: "",
+      grade: "4",
+      completed: false,
     },
     {
-      "entry_name": "This is log 2",
-      "date": "",
-      "info": "climbed today on an overhand, fell off 10 times ",
-      "imagePath": "",
-      "grade": "1",
-      "completed": false
+      entry_name: "This is log 2",
+      date: "",
+      info: "climbed today on an overhand, fell off 10 times ",
+      imagePath: "",
+      grade: "1",
+      completed: false,
     },
     {
-      "entry_name": "And this is log 3",
-      "date": "22/03/2022",
-      "info": "blah blah blah",
-      "imagePath": "",
-      "grade": "2",
-      "completed": true
-    }
-  ]
-}`);
+      entry_name: "And this is log 3",
+      date: "22/03/2022",
+      info: "blah blah blah",
+      imagePath: "",
+      grade: "2",
+      completed: true,
+    },
+  ],
+};
 
 const gljson = {
   goal: [
     { title: "Goal 1", date: "2023/03/23", achieved: false },
     { title: "Goal 2", date: "2023/01/23", achieved: false },
+  ],
+};
+
+const trainArr = {
+  workOuts: [
+    {
+      Name: "Default",
+      contents: [
+        { name: "Pull up", type: "count", quant: 10 },
+        { name: "Push up", type: "count", quant: 10 },
+        { name: "Squats", type: "count", quant: 10 },
+        { name: "50Kg Reps", type: "count", quant: 10 },
+      ],
+    },
+    {
+      Name: "Climbing",
+      contents: [
+        { name: "Pull up", type: "count", quant: 10 },
+        { name: "Push up", type: "count", quant: 10 },
+        { name: "Squats", type: "count", quant: 10 },
+        { name: "50Kg Reps", type: "count", quant: 10 },
+        { name: "Finger hang", type: "time", quant: 20 },
+        { name: "running", type: "time", quant: 120 },
+        { name: "bicep curls", type: "count", quant: 20 },
+      ],
+    },
   ],
 };
 
@@ -133,27 +159,29 @@ function HomeScreen({ navigation }) {
   );
 }
 
+async function _getTrainingValues() {
+  try {
+    const trainJson = await AsyncStorage.getItem("@Training");
+    console.log(trainJson);
+    return JSON.parse(trainJson);
+  } catch (e) {
+    console.log("failed to laod: " + e);
+  }
+}
+
 function Training({ navigation }) {
   // changed from Calendar to training
-  const arr = [
-    {
-      Name: "Default",
-      contents: [
-        { name: "Pull up", type: "count", quant: 10 },
-        { name: "Push up", type: "count", quant: 10 },
-      ],
-    },
-    {
-      Name: "Default 2",
-      contents: [
-        { name: "Pull up", type: "count", quant: 10 },
-        { name: "Push up", type: "count", quant: 10 },
-        { name: "Squats", type: "count", quant: 10 },
-        { name: "50Kg Reps", type: "count", quant: 10 },
-        { name: "Finger hang", type: "time", quant: 20 },
-      ],
-    },
-  ];
+
+  const [trainingArr, setTrainingArr] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await _getTrainingValues();
+      setTrainingArr(data.workOuts);
+      console.log(data);
+    };
+    fetchData();
+  }, []);
 
   return (
     <View style={styles.scrollStyle}>
@@ -161,8 +189,11 @@ function Training({ navigation }) {
         style={styles.logo}
         source={require("./assets/GrypLogoWhite.png")}
       />
+      <TouchableOpacity style={styles.newGoal}>
+        <Text style={styles.newGoalText}>New work out plan</Text>
+      </TouchableOpacity>
       <FlatList
-        data={arr}
+        data={trainingArr}
         numColumns={2}
         renderItem={({ item }) => (
           <WorkOutCell
@@ -177,11 +208,19 @@ function Training({ navigation }) {
 
 function WorkOut({ route, navigation }) {
   return (
-    <ScrollView style={styles.scrollStyle}>
-      {route.params.map((item, i) => (
-        <Set key={i} name={item.name} quant={item.quant} type={item.type} />
-      ))}
-    </ScrollView>
+    <View style={styles.scrollStyle}>
+      <Image
+        style={styles.logo}
+        source={require("./assets/GrypLogoWhite.png")}
+      />
+      <FlatList
+        data={route.params}
+        numColumns={1}
+        renderItem={({ item }) => (
+          <Set name={item.name} quant={item.quant} type={item.type} />
+        )}
+      />
+    </View>
   );
 }
 
@@ -226,7 +265,6 @@ function Goals({ navigation }) {
           achieved={item.achieved}
         />
       ))}
-      <GoalItem k={5} date={"2023/03/23"} title={"test"} achieved={true} />
     </ScrollView>
   );
 }
@@ -398,11 +436,9 @@ export default function App() {
   useEffect(() => {
     (async () => {
       let t = await AsyncStorage.getItem("@LogInfo");
-      // console.log("log = " + t);
       if (t == null) {
         try {
-          const jsonValueLog = JSON.stringify(log);
-          await AsyncStorage.setItem("@LogInfo", jsonValueLog);
+          await AsyncStorage.setItem("@LogInfo", JSON.stringify(log));
         } catch (e) {
           console.log("error with log saving: " + e);
         }
@@ -415,9 +451,20 @@ export default function App() {
       let g = await AsyncStorage.getItem("@GoalList");
       if (g == null) {
         try {
-          // const jsonValueGoal = JSON.stringify();
-          // await AsyncStorage.setItem("@GoalList", jsonValueGoal);
           await AsyncStorage.setItem("@GoalList", JSON.stringify(gljson));
+        } catch (e) {
+          console.log("error with log saving: " + e);
+        }
+      }
+    })();
+  }, []);
+
+  useEffect(() => {
+    (async () => {
+      let g = await AsyncStorage.getItem("@Training");
+      if (g == null) {
+        try {
+          await AsyncStorage.setItem("@Training", JSON.stringify(trainArr));
         } catch (e) {
           console.log("error with log saving: " + e);
         }

@@ -10,6 +10,7 @@ import {
   Image,
   TouchableOpacity,
   ImageBackground,
+  FlatList,
 } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -26,6 +27,8 @@ import { Picker } from "@react-native-picker/picker";
 import CheckBox from "expo-checkbox";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import Spinner from "react-native-loading-spinner-overlay";
+import { WorkOutCell } from "./components/Training";
+import { Set } from "./components/Set";
 
 const Stack = createNativeStackNavigator();
 const log = JSON.parse(`{
@@ -81,7 +84,7 @@ function HomeScreen({ navigation }) {
       <View style={styles.homeScreenCells}>
         <TouchableOpacity
           style={styles.homeScreenTouchable}
-          onPress={() => navigation.navigate("Calendar")}
+          onPress={() => navigation.navigate("Training")}
         >
           <ImageBackground
             style={styles.homePageImages}
@@ -130,19 +133,59 @@ function HomeScreen({ navigation }) {
   );
 }
 
-function Calendar({ navigation }) {
+function Training({ navigation }) {
+  // changed from Calendar to training
+  const arr = [
+    {
+      Name: "Default",
+      contents: [
+        { name: "Pull up", type: "count", quant: 10 },
+        { name: "Push up", type: "count", quant: 10 },
+      ],
+    },
+    {
+      Name: "Default 2",
+      contents: [
+        { name: "Pull up", type: "count", quant: 10 },
+        { name: "Push up", type: "count", quant: 10 },
+        { name: "Squats", type: "count", quant: 10 },
+        { name: "50Kg Reps", type: "count", quant: 10 },
+        { name: "Finger hang", type: "time", quant: 20 },
+      ],
+    },
+  ];
+
   return (
-    <ScrollView style={styles.scrollStyle}>
+    <View style={styles.scrollStyle}>
       <Image
         style={styles.logo}
         source={require("./assets/GrypLogoWhite.png")}
       />
-      <Text>Calendar</Text>
+      <FlatList
+        data={arr}
+        numColumns={2}
+        renderItem={({ item }) => (
+          <WorkOutCell
+            name={item.Name}
+            action={() => navigation.navigate("Work Out", item.contents)}
+          />
+        )}
+      />
+    </View>
+  );
+}
+
+function WorkOut({ route, navigation }) {
+  return (
+    <ScrollView style={styles.scrollStyle}>
+      {route.params.map((item, i) => (
+        <Set key={i} name={item.name} quant={item.quant} type={item.type} />
+      ))}
     </ScrollView>
   );
 }
 
-async function _getValues(k) {
+async function _getGoalValues(k) {
   try {
     const goalJson = await AsyncStorage.getItem(k);
     return JSON.parse(goalJson).goal;
@@ -156,7 +199,7 @@ function Goals({ navigation }) {
 
   useEffect(() => {
     const fetchData = async () => {
-      const data = await _getValues("@GoalList");
+      const data = await _getGoalValues("@GoalList");
       setGoalArr(data);
     };
     fetchData();
@@ -253,7 +296,7 @@ function ClimbingLogScreen({ navigation }) {
               date={section.date}
               grade={section.grade}
               logInfo={section.info}
-              action={() => navigation.navigate("LogPage", { k: i })}
+              action={() => navigation.navigate("Log Page", { k: i })}
             />
           </Section>
         ))}
@@ -386,12 +429,13 @@ export default function App() {
     <NavigationContainer>
       <Stack.Navigator>
         <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen name="Calendar" component={Calendar} />
+        <Stack.Screen name="Training" component={Training} />
         <Stack.Screen name="Setting" component={Settings} />
         <Stack.Screen name="ClimbingLogScreen" component={ClimbingLogScreen} />
         <Stack.Screen name="Goals" component={Goals} />
-        <Stack.Screen name="LogPage" component={LogPage} />
+        <Stack.Screen name="Log Page" component={LogPage} />
         <Stack.Screen name="New goal" component={NewGoal} />
+        <Stack.Screen name="Work Out" component={WorkOut} />
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -522,5 +566,15 @@ const styles = StyleSheet.create({
     fontSize: 40,
     textAlign: "center",
     textAlignVertical: "center",
+  },
+  trainingCell: {
+    flex: 1,
+  },
+  trainingTouchable: {
+    flex: 1,
+    flexDirection: "column",
+    margin: 4,
+    borderRadius: 5,
+    backgroundColor: "#808080",
   },
 });

@@ -17,10 +17,8 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { Section, TableView } from "react-native-tableview-simple";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 // import AsyncStorage from "@react-native-community/async-storage";
-import React, { useEffect, useState } from "react";
-import UserData from "./userdata.json";
+import React, { useEffect, useState, useCallback } from "react";
 import LogInfo from "./log.json";
-import JsonGoals from "./goalList.json";
 import { ClimbingLogCell } from "./components/ClimbingLogCell.js";
 import { GoalItem } from "./components/GoalComp";
 import { Picker } from "@react-native-picker/picker";
@@ -197,6 +195,7 @@ function Training({ navigation }) {
       </TouchableOpacity>
       <FlatList
         data={trainingArr}
+        extraData={trainArr}
         numColumns={2}
         renderItem={({ item }) => (
           <WorkOutCell
@@ -207,11 +206,6 @@ function Training({ navigation }) {
       />
     </View>
   );
-}
-
-function addDays(curr, d, m) {
-  curr.setDate(date.getDate() + d + m * 30);
-  return result;
 }
 
 function NewWorkOut({ navigation }) {
@@ -306,6 +300,7 @@ function WorkOut({ route, navigation }) {
       />
       <FlatList
         data={route.params}
+        extraData={route.params}
         numColumns={1}
         renderItem={({ item }) => (
           <Set name={item.name} type={item.type} quant={item.quant} />
@@ -326,6 +321,7 @@ async function _getGoalValues() {
 
 function Goals({ navigation }) {
   const [goalArr, setGoalArr] = useState([]);
+  const [state, setState] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -335,29 +331,69 @@ function Goals({ navigation }) {
     fetchData();
   }, []);
 
+  const handleRefresh = async () => {
+    const data = await _getGoalValues();
+    setGoalArr(data.goal);
+  };
+
+  const onRefresh = useCallback(() => {
+    setState(true);
+    const fetchData = async () => {
+      const data = await _getGoalValues();
+      setGoalArr(data.goal);
+    };
+    fetchData();
+    setTimeout(() => {
+      setState(false);
+    }, 2000);
+  }, []);
+
   return (
-    <ScrollView style={styles.scrollStyle}>
+    <View style={styles.scrollStyle}>
       <Image
         style={styles.logo}
         source={require("./assets/GrypLogoWhite.png")}
       />
-      <TouchableOpacity
-        style={styles.newGoal}
-        onPress={() => navigation.navigate("New goal")}
-      >
-        <Text style={styles.newGoalText}>New Goal</Text>
-      </TouchableOpacity>
-      {goalArr.map((item, i) => (
-        <GoalItem
-          key={i}
-          k={i}
-          date={item.date}
-          title={item.title}
-          achieved={item.achieved}
-        />
-      ))}
-    </ScrollView>
+      <View style={{ flexDirection: "row" }}>
+        <TouchableOpacity
+          style={styles.newGoal}
+          onPress={() => navigation.navigate("New goal")}
+        >
+          <Text style={styles.newGoalText}>New Goal</Text>
+        </TouchableOpacity>
+        <View style={styles.newGoal}>
+          <Text style={styles.newGoalText}>Pull to refresh</Text>
+        </View>
+      </View>
+      <FlatList
+        data={goalArr}
+        extraData={goalArr}
+        numColumns={1}
+        renderItem={({ item, index }) => (
+          <GoalItem
+            k={index}
+            date={item.date}
+            title={item.title}
+            achieved={item.achieved}
+          />
+        )}
+        refreshing={state}
+        onRefresh={onRefresh}
+      />
+    </View>
   );
+}
+
+function addDays(d, m) {
+  let curr = new Date();
+  curr.setDate(curr.getDate() + d + m * 30);
+  return curr;
+}
+
+async function addGoal(list, g) {
+  list.goal.push(g);
+  let string = JSON.stringify(list);
+  AsyncStorage.setItem("@GoalList", string);
 }
 
 function NewGoal({ navigation }) {
@@ -365,107 +401,136 @@ function NewGoal({ navigation }) {
   const [date, setDate] = useState(new Date());
   const [days, setDays] = useState(0);
   const [months, setMonths] = useState(0);
+  const [existingData, setExistingData] = useState({});
 
-  const onChange = (event, selectedDate) => {
-    const currentDate = selectedDate || date;
+  const goalGenerate = () => {
+    let deadline = addDays(days, months);
+    let g = { title: `${name}`, date: `${deadline}`, achieved: false };
+    return g;
   };
 
-  const showMode = (currentMode) => {
-    setMode(currentMode);
-    setShow(true);
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await _getGoalValues();
+      setExistingData(data);
+    };
+    fetchData();
+  }, []);
+
+  const makeAndNavigate = () => {
+    addGoal(existingData, goalGenerate());
+    navigation.navigate("Goals");
   };
 
   return (
     <View style={styles.scrollStyle}>
-      <Text>Goal</Text>
-      <TextInput
-        style={styles.logNameText}
-        onChangeText={async (name) => {
-          setName(name);
-        }}
-        value={name}
-        placeholder={""}
+      <Image
+        style={styles.logo}
+        source={require("./assets/GrypLogoWhite.png")}
       />
-      <Text>Deadline Date</Text>
-      <DateTimePicker></DateTimePicker>
+      <View
+        style={{
+          alignItems: "center",
+          margin: 5,
+          borderWidth: 1,
+          borderRadius: 5,
+          backgroundColor: "aliceblue",
+        }}
+      >
+        <Text>Goal name</Text>
+        <TextInput
+          style={styles.goalNameText}
+          onChangeText={async (name) => {
+            setName(name);
+          }}
+          value={name}
+          placeholder={"Goal name"}
+        />
+        <Text>Deadline</Text>
+        <View style={styles.newGoalSelectView}>
+          <View style={styles.goalPickerView}>
+            <Picker
+              style={styles.excersizeDropdown}
+              selectedValue={days}
+              onValueChange={(itemValue, itemIndex) => setDays(itemValue)}
+            >
+              <Picker.Item label="0 day" value={0} />
+              <Picker.Item label="1 day" value={1} />
+              <Picker.Item label="2 day" value={2} />
+              <Picker.Item label="3 day" value={3} />
+              <Picker.Item label="4 day" value={4} />
+              <Picker.Item label="5 day" value={5} />
+              <Picker.Item label="6 day" value={6} />
+              <Picker.Item label="7 day" value={7} />
+              <Picker.Item label="8 day" value={8} />
+              <Picker.Item label="9 day" value={9} />
+              <Picker.Item label="10 day" value={10} />
+              <Picker.Item label="11 day" value={11} />
+              <Picker.Item label="12 day" value={12} />
+              <Picker.Item label="13 day" value={13} />
+              <Picker.Item label="14 day" value={14} />
+              <Picker.Item label="15 day" value={15} />
+              <Picker.Item label="16 day" value={16} />
+              <Picker.Item label="17 day" value={17} />
+              <Picker.Item label="18 day" value={18} />
+              <Picker.Item label="19 day" value={19} />
+              <Picker.Item label="20 day" value={20} />
+              <Picker.Item label="21 day" value={21} />
+              <Picker.Item label="22 day" value={22} />
+              <Picker.Item label="23 day" value={23} />
+              <Picker.Item label="24 day" value={24} />
+              <Picker.Item label="25 day" value={25} />
+              <Picker.Item label="26 day" value={26} />
+              <Picker.Item label="27 day" value={27} />
+              <Picker.Item label="28 day" value={28} />
+              <Picker.Item label="29 day" value={29} />
+              <Picker.Item label="30 day" value={30} />
+              <Picker.Item label="31 day" value={31} />
+            </Picker>
+          </View>
+          <View style={styles.goalPickerView}>
+            <Picker
+              style={styles.excersizeDropdown}
+              selectedValue={months}
+              onValueChange={(itemValue, itemIndex) => setMonths(itemValue)}
+            >
+              <Picker.Item label="0 months" value={0} />
+              <Picker.Item label="1 months" value={1} />
+              <Picker.Item label="2 months" value={2} />
+              <Picker.Item label="3 months" value={3} />
+              <Picker.Item label="4 months" value={4} />
+              <Picker.Item label="5 months" value={5} />
+              <Picker.Item label="6 months" value={6} />
+              <Picker.Item label="7 months" value={7} />
+              <Picker.Item label="8 months" value={8} />
+              <Picker.Item label="9 months" value={9} />
+              <Picker.Item label="10 months" value={10} />
+              <Picker.Item label="11 months" value={11} />
+              <Picker.Item label="12 months" value={12} />
+              <Picker.Item label="13 months" value={13} />
+              <Picker.Item label="14 months" value={14} />
+              <Picker.Item label="15 months" value={15} />
+              <Picker.Item label="16 months" value={16} />
+              <Picker.Item label="17 months" value={17} />
+              <Picker.Item label="18 months" value={18} />
+              <Picker.Item label="19 months" value={19} />
+              <Picker.Item label="20 months" value={20} />
+              <Picker.Item label="21 months" value={21} />
+              <Picker.Item label="22 months" value={22} />
+              <Picker.Item label="23 months" value={23} />
+            </Picker>
+          </View>
+        </View>
+        <TouchableOpacity
+          style={styles.newGoal}
+          onPress={() => makeAndNavigate()}
+        >
+          <Text style={styles.newGoalText}>Save goal</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
-
-// <View style={styles.newExcersizeSelectView}>
-//           <View style={styles.excersizePickerView}>
-//             <Picker
-//               style={styles.excersizeDropdown}
-//               selectedValue={days}
-//               onValueChange={(itemValue, itemIndex) => setDays(itemValue)}
-//             >
-//               <Picker.Item label="0 day" value={0} />
-//               <Picker.Item label="1 day" value={1} />
-//               <Picker.Item label="2 day" value={2} />
-//               <Picker.Item label="3 day" value={3} />
-//               <Picker.Item label="4 day" value={4} />
-//               <Picker.Item label="5 day" value={5} />
-//               <Picker.Item label="6 day" value={6} />
-//               <Picker.Item label="7 day" value={7} />
-//               <Picker.Item label="8 day" value={8} />
-//               <Picker.Item label="9 day" value={9} />
-//               <Picker.Item label="10 day" value={10} />
-//               <Picker.Item label="11 day" value={11} />
-//               <Picker.Item label="12 day" value={12} />
-//               <Picker.Item label="13 day" value={13} />
-//               <Picker.Item label="14 day" value={14} />
-//               <Picker.Item label="15 day" value={15} />
-//               <Picker.Item label="16 day" value={16} />
-//               <Picker.Item label="17 day" value={17} />
-//               <Picker.Item label="18 day" value={18} />
-//               <Picker.Item label="19 day" value={19} />
-//               <Picker.Item label="20 day" value={20} />
-//               <Picker.Item label="21 day" value={21} />
-//               <Picker.Item label="22 day" value={22} />
-//               <Picker.Item label="23 day" value={23} />
-//               <Picker.Item label="24 day" value={24} />
-//               <Picker.Item label="25 day" value={25} />
-//               <Picker.Item label="26 day" value={26} />
-//               <Picker.Item label="27 day" value={27} />
-//               <Picker.Item label="28 day" value={28} />
-//               <Picker.Item label="29 day" value={29} />
-//               <Picker.Item label="30 day" value={30} />
-//               <Picker.Item label="31 day" value={31} />
-//             </Picker>
-//           </View>
-//           <View style={styles.excersizePickerView}>
-//             <Picker
-//               style={styles.excersizeDropdown}
-//               selectedValue={months}
-//               onValueChange={(itemValue, itemIndex) => setMonths(itemValue)}
-//             >
-//               <Picker.Item label="0 months" value={0} />
-//               <Picker.Item label="1 months" value={1} />
-//               <Picker.Item label="2 months" value={2} />
-//               <Picker.Item label="3 months" value={3} />
-//               <Picker.Item label="4 months" value={4} />
-//               <Picker.Item label="5 months" value={5} />
-//               <Picker.Item label="6 months" value={6} />
-//               <Picker.Item label="7 months" value={7} />
-//               <Picker.Item label="8 months" value={8} />
-//               <Picker.Item label="9 months" value={9} />
-//               <Picker.Item label="10 months" value={10} />
-//               <Picker.Item label="11 months" value={11} />
-//               <Picker.Item label="12 months" value={12} />
-//               <Picker.Item label="13 months" value={13} />
-//               <Picker.Item label="14 months" value={14} />
-//               <Picker.Item label="15 months" value={15} />
-//               <Picker.Item label="16 months" value={16} />
-//               <Picker.Item label="17 months" value={17} />
-//               <Picker.Item label="18 months" value={18} />
-//               <Picker.Item label="19 months" value={19} />
-//               <Picker.Item label="20 months" value={20} />
-//               <Picker.Item label="21 months" value={21} />
-//               <Picker.Item label="22 months" value={22} />
-//               <Picker.Item label="23 months" value={23} />
-//             </Picker>
-//           </View>
-//         </View>
 
 function Settings({ navigation }) {
   return (
@@ -595,9 +660,9 @@ function LogPage({ route, navigation }) {
 }
 
 export default function App() {
-  useEffect(() => {
-    AsyncStorage.clear();
-  });
+  // useEffect(() => { // used to refresh data
+  //   AsyncStorage.clear();
+  // });
 
   useEffect(() => {
     (async () => {
@@ -700,12 +765,14 @@ const styles = StyleSheet.create({
     height: 150,
   },
   newGoal: {
-    width: "90%",
+    width: "45%",
     height: 30,
     backgroundColor: "white",
     borderRadius: 10,
     alignSelf: "center",
     marginBottom: 10,
+    borderWidth: 1,
+    marginHorizontal: "2.5%",
   },
   newGoalText: {
     fontSize: 18,
@@ -835,5 +902,29 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     marginBottom: 10,
     borderWidth: 1,
+  },
+  newGoalSelectView: {
+    height: 70,
+    width: "95%",
+    flexDirection: "row",
+  },
+  goalPickerView: {
+    width: "50%",
+    height: 62,
+    borderColor: "black",
+    borderWidth: 1,
+    borderRadius: 15,
+    backgroundColor: "white",
+  },
+  goalNameText: {
+    fontSize: 18,
+    marginTop: 10,
+    marginHorizontal: 10,
+    backgroundColor: "white",
+    height: 30,
+    paddingHorizontal: 5,
+    borderRadius: 10,
+    borderWidth: 1,
+    width: "95%",
   },
 });

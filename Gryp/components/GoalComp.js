@@ -1,15 +1,52 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Cell } from "react-native-tableview-simple";
 import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
-import GoalList from "../goalList.json";
 import CheckBox from "expo-checkbox";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+async function _getGoalValues() {
+  try {
+    const goalJson = await AsyncStorage.getItem("@GoalList");
+    return JSON.parse(goalJson);
+  } catch (e) {
+    console.log("failed to laod: " + e);
+  }
+}
+
+async function updateGoals(list) {
+  let string = JSON.stringify(list);
+  AsyncStorage.setItem("@GoalList", string);
+}
+
 const GoalItem = (props) => {
+  const [goalArr, setGoalArr] = useState([]);
 
-  today = new Date().getTime();
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await _getGoalValues();
 
-  deadline = new Date(props.date).getTime();
+      setGoalArr(data);
+    };
+    fetchData();
+  }, []);
+
+  const updateBool = () => {
+    if (isCompleted) {
+      setIsCompleted(false);
+      let temp = goalArr;
+      temp.goal[props.k].achieved = false;
+      updateGoals(temp);
+    } else {
+      setIsCompleted(true);
+      let temp = goalArr;
+      temp.goal[props.k].achieved = true;
+      updateGoals(temp);
+    }
+  };
+
+  let today = new Date().getTime();
+
+  let deadline = new Date(props.date).getTime();
 
   const [isCompleted, setIsCompleted] = useState(props.achieved);
 
@@ -18,7 +55,7 @@ const GoalItem = (props) => {
       <View style={styles.goalItemOverdue}>
         <CheckBox
           value={isCompleted}
-          onValueChange={setIsCompleted}
+          onValueChange={updateBool}
           style={styles.tickBox}
         />
         <Text style={styles.goalText}>{props.title}</Text>
@@ -29,7 +66,7 @@ const GoalItem = (props) => {
       <View style={styles.goalItem}>
         <CheckBox
           value={isCompleted}
-          onValueChange={setIsCompleted}
+          onValueChange={updateBool}
           style={styles.tickBox}
         />
         <Text style={styles.goalText}>{props.title}</Text>
@@ -40,7 +77,7 @@ const GoalItem = (props) => {
       <View style={styles.goalItemCompleted}>
         <CheckBox
           value={isCompleted}
-          onValueChange={setIsCompleted}
+          onValueChange={updateBool}
           style={styles.tickBox}
         />
         <Text style={styles.goalText}>{props.title}</Text>

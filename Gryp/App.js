@@ -17,7 +17,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { Section, TableView } from "react-native-tableview-simple";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 // import AsyncStorage from "@react-native-community/async-storage";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import LogInfo from "./log.json";
 import { ClimbingLogCell } from "./components/ClimbingLogCell.js";
 import { GoalItem } from "./components/GoalComp";
@@ -321,6 +321,7 @@ async function _getGoalValues() {
 
 function Goals({ navigation }) {
   const [goalArr, setGoalArr] = useState([]);
+  const [state, setState] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -330,18 +331,40 @@ function Goals({ navigation }) {
     fetchData();
   }, []);
 
+  const handleRefresh = async () => {
+    const data = await _getGoalValues();
+    setGoalArr(data.goal);
+  };
+
+  const onRefresh = useCallback(() => {
+    setState(true);
+    const fetchData = async () => {
+      const data = await _getGoalValues();
+      setGoalArr(data.goal);
+    };
+    fetchData();
+    setTimeout(() => {
+      setState(false);
+    }, 2000);
+  }, []);
+
   return (
     <View style={styles.scrollStyle}>
       <Image
         style={styles.logo}
         source={require("./assets/GrypLogoWhite.png")}
       />
-      <TouchableOpacity
-        style={styles.newGoal}
-        onPress={() => navigation.navigate("New goal")}
-      >
-        <Text style={styles.newGoalText}>New Goal</Text>
-      </TouchableOpacity>
+      <View style={{ flexDirection: "row" }}>
+        <TouchableOpacity
+          style={styles.newGoal}
+          onPress={() => navigation.navigate("New goal")}
+        >
+          <Text style={styles.newGoalText}>New Goal</Text>
+        </TouchableOpacity>
+        <View style={styles.newGoal}>
+          <Text style={styles.newGoalText}>Pull to refresh</Text>
+        </View>
+      </View>
       <FlatList
         data={goalArr}
         extraData={goalArr}
@@ -354,6 +377,8 @@ function Goals({ navigation }) {
             achieved={item.achieved}
           />
         )}
+        refreshing={state}
+        onRefresh={onRefresh}
       />
     </View>
   );
@@ -369,7 +394,6 @@ async function addGoal(list, g) {
   list.goal.push(g);
   let string = JSON.stringify(list);
   AsyncStorage.setItem("@GoalList", string);
-  console.log(string);
 }
 
 function NewGoal({ navigation }) {
@@ -741,13 +765,14 @@ const styles = StyleSheet.create({
     height: 150,
   },
   newGoal: {
-    width: "90%",
+    width: "45%",
     height: 30,
     backgroundColor: "white",
     borderRadius: 10,
     alignSelf: "center",
     marginBottom: 10,
     borderWidth: 1,
+    marginHorizontal: "2.5%",
   },
   newGoalText: {
     fontSize: 18,

@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Cell } from "react-native-tableview-simple";
 import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
-import GoalList from "../goalList.json";
 import CheckBox from "expo-checkbox";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 

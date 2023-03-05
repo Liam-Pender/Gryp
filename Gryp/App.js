@@ -168,10 +168,18 @@ async function _getTrainingValues() {
   }
 }
 
+async function _saveWorkOut(list, name) {
+  let temp = await _getTrainingValues();
+  temp.workOuts.push({ Name: name, contents: list });
+  console.log(temp);
+  await AsyncStorage.setItem("@Training", JSON.stringify(temp));
+}
+
 function Training({ navigation }) {
   // changed from Calendar to training
 
   const [trainingArr, setTrainingArr] = useState([]);
+  const [state, setState] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -179,6 +187,18 @@ function Training({ navigation }) {
       setTrainingArr(data.workOuts);
     };
     fetchData();
+  }, []);
+
+  const onRefresh = useCallback(() => {
+    setState(true);
+    const fetchData = async () => {
+      const data = await _getTrainingValues();
+      setTrainingArr(data.workOuts);
+    };
+    fetchData();
+    setTimeout(() => {
+      setState(false);
+    }, 2000);
   }, []);
 
   return (
@@ -203,6 +223,8 @@ function Training({ navigation }) {
             action={() => navigation.navigate("Work Out", item.contents)}
           />
         )}
+        refreshing={state}
+        onRefresh={onRefresh}
       />
     </View>
   );
@@ -216,13 +238,18 @@ function NewWorkOut({ navigation }) {
   const [workOutName, setWorkOutName] = useState("unnamed");
 
   const addElem = () => {
-    console.log("pushing to array");
     let newEx = {
       name: `${name}`,
       type: `${type}`,
       quant: `${quant}`,
     };
     setNewArray((newArr) => [...newArr, newEx]);
+  };
+
+  const saveNew = async () => {
+    console.log("saving work out");
+    _saveWorkOut(newArr, name);
+    navigation.navigate("Training");
   };
 
   return (
@@ -270,10 +297,7 @@ function NewWorkOut({ navigation }) {
         </TouchableOpacity>
       </View>
       <View>
-        <TouchableOpacity
-          style={styles.newGoal}
-          onPress={() => console.log(newArr)}
-        >
+        <TouchableOpacity style={styles.newGoal} onPress={() => saveNew()}>
           <Text style={styles.newGoalText}>Save Workout</Text>
         </TouchableOpacity>
       </View>
@@ -330,11 +354,6 @@ function Goals({ navigation }) {
     };
     fetchData();
   }, []);
-
-  const handleRefresh = async () => {
-    const data = await _getGoalValues();
-    setGoalArr(data.goal);
-  };
 
   const onRefresh = useCallback(() => {
     setState(true);
@@ -660,7 +679,8 @@ function LogPage({ route, navigation }) {
 }
 
 export default function App() {
-  // useEffect(() => { // used to refresh data
+  // useEffect(() => {
+  //   // used to refresh data
   //   AsyncStorage.clear();
   // });
 

@@ -29,41 +29,69 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import Spinner from "react-native-loading-spinner-overlay";
 import { WorkOutCell } from "./components/Training";
 import { Set } from "./components/Set";
+import NumericInput from "react-native-numeric-input";
+import DatePicker from "react-native-date-picker";
 
 const Stack = createNativeStackNavigator();
-const log = JSON.parse(`{
-  "Climbing_logs": [
+const log = {
+  Climbing_logs: [
     {
-      "entry_name": "This is log 1",
-      "date": "23/04/2022",
-      "info": "Climbed today on a slab, it went well, fell off 3 times, I am now extending the length of this to check multi line printing",
-      "imagePath": "",
-      "grade": "4",
-      "completed": false
+      entry_name: "This is log 1",
+      date: "23/04/2022",
+      info: "Climbed today on a slab, it went well, fell off 3 times, I am now extending the length of this to check multi line printing",
+      imagePath: "",
+      grade: "4",
+      completed: false,
     },
     {
-      "entry_name": "This is log 2",
-      "date": "",
-      "info": "climbed today on an overhand, fell off 10 times ",
-      "imagePath": "",
-      "grade": "1",
-      "completed": false
+      entry_name: "This is log 2",
+      date: "",
+      info: "climbed today on an overhand, fell off 10 times ",
+      imagePath: "",
+      grade: "1",
+      completed: false,
     },
     {
-      "entry_name": "And this is log 3",
-      "date": "22/03/2022",
-      "info": "blah blah blah",
-      "imagePath": "",
-      "grade": "2",
-      "completed": true
-    }
-  ]
-}`);
+      entry_name: "And this is log 3",
+      date: "22/03/2022",
+      info: "blah blah blah",
+      imagePath: "",
+      grade: "2",
+      completed: true,
+    },
+  ],
+};
 
 const gljson = {
   goal: [
     { title: "Goal 1", date: "2023/03/23", achieved: false },
     { title: "Goal 2", date: "2023/01/23", achieved: false },
+  ],
+};
+
+const trainArr = {
+  workOuts: [
+    {
+      Name: "Default",
+      contents: [
+        { name: "Pull up", type: "count", quant: 10 },
+        { name: "Push up", type: "count", quant: 10 },
+        { name: "Squats", type: "count", quant: 10 },
+        { name: "50Kg Reps", type: "count", quant: 10 },
+      ],
+    },
+    {
+      Name: "Climbing",
+      contents: [
+        { name: "Pull up", type: "count", quant: 10 },
+        { name: "Push up", type: "count", quant: 10 },
+        { name: "Squats", type: "count", quant: 10 },
+        { name: "50Kg Reps", type: "count", quant: 10 },
+        { name: "Finger hang", type: "time", quant: 20 },
+        { name: "running", type: "time", quant: 120 },
+        { name: "bicep curls", type: "count", quant: 20 },
+      ],
+    },
   ],
 };
 
@@ -133,27 +161,27 @@ function HomeScreen({ navigation }) {
   );
 }
 
+async function _getTrainingValues() {
+  try {
+    const trainJson = await AsyncStorage.getItem("@Training");
+    return JSON.parse(trainJson);
+  } catch (e) {
+    console.log("failed to laod: " + e);
+  }
+}
+
 function Training({ navigation }) {
   // changed from Calendar to training
-  const arr = [
-    {
-      Name: "Default",
-      contents: [
-        { name: "Pull up", type: "count", quant: 10 },
-        { name: "Push up", type: "count", quant: 10 },
-      ],
-    },
-    {
-      Name: "Default 2",
-      contents: [
-        { name: "Pull up", type: "count", quant: 10 },
-        { name: "Push up", type: "count", quant: 10 },
-        { name: "Squats", type: "count", quant: 10 },
-        { name: "50Kg Reps", type: "count", quant: 10 },
-        { name: "Finger hang", type: "time", quant: 20 },
-      ],
-    },
-  ];
+
+  const [trainingArr, setTrainingArr] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await _getTrainingValues();
+      setTrainingArr(data.workOuts);
+    };
+    fetchData();
+  }, []);
 
   return (
     <View style={styles.scrollStyle}>
@@ -161,8 +189,14 @@ function Training({ navigation }) {
         style={styles.logo}
         source={require("./assets/GrypLogoWhite.png")}
       />
+      <TouchableOpacity
+        style={styles.newGoal}
+        onPress={() => navigation.navigate("New Workout")}
+      >
+        <Text style={styles.newGoalText}>New work out plan</Text>
+      </TouchableOpacity>
       <FlatList
-        data={arr}
+        data={trainingArr}
         numColumns={2}
         renderItem={({ item }) => (
           <WorkOutCell
@@ -175,20 +209,116 @@ function Training({ navigation }) {
   );
 }
 
-function WorkOut({ route, navigation }) {
+function addDays(curr, d, m) {
+  curr.setDate(date.getDate() + d + m * 30);
+  return result;
+}
+
+function NewWorkOut({ navigation }) {
+  const [newArr, setNewArray] = useState([]);
+  const [name, setName] = useState("");
+  const [type, setType] = useState("count");
+  const [quant, setQuant] = useState(10);
+  const [workOutName, setWorkOutName] = useState("unnamed");
+
+  const addElem = () => {
+    console.log("pushing to array");
+    let newEx = {
+      name: `${name}`,
+      type: `${type}`,
+      quant: `${quant}`,
+    };
+    setNewArray((newArr) => [...newArr, newEx]);
+  };
+
   return (
-    <ScrollView style={styles.scrollStyle}>
-      {route.params.map((item, i) => (
-        <Set key={i} name={item.name} quant={item.quant} type={item.type} />
-      ))}
-    </ScrollView>
+    <SafeAreaView style={styles.scrollStyle}>
+      <Image
+        style={styles.logo}
+        source={require("./assets/GrypLogoWhite.png")}
+      />
+      <TextInput
+        style={styles.logNameText}
+        onChangeText={async (workOutName) => {
+          setWorkOutName(workOutName);
+        }}
+        value={workOutName}
+        placeholder={"unnamed"}
+      />
+      <View style={styles.newExcersizeView}>
+        <View style={styles.newExcersizeNameView}>
+          <TextInput
+            style={styles.logNameText}
+            onChangeText={async (name) => {
+              setName(name);
+            }}
+            value={name}
+            placeholder={"Excercise"}
+          />
+        </View>
+        <View style={styles.newExcersizeSelectView}>
+          <View style={styles.excersizePickerView}>
+            <Picker
+              style={styles.excersizeDropdown}
+              selectedValue={type}
+              onValueChange={(itemValue, itemIndex) => setType(itemValue)}
+            >
+              <Picker.Item label="Reps" value="count" />
+              <Picker.Item label="Time" value="time" />
+            </Picker>
+          </View>
+          <View style={styles.counter}>
+            <NumericInput value={quant} onChange={(value) => setQuant(value)} />
+          </View>
+        </View>
+        <TouchableOpacity style={styles.saveElement} onPress={() => addElem()}>
+          <Text style={styles.newGoalText}>Save to list</Text>
+        </TouchableOpacity>
+      </View>
+      <View>
+        <TouchableOpacity
+          style={styles.newGoal}
+          onPress={() => console.log(newArr)}
+        >
+          <Text style={styles.newGoalText}>Save Workout</Text>
+        </TouchableOpacity>
+      </View>
+      <View>
+        <FlatList
+          data={newArr}
+          extraData={newArr}
+          numColumns={1}
+          renderItem={({ item }) => (
+            <Set name={item.name} type={item.type} quant={item.quant} />
+          )}
+        />
+      </View>
+    </SafeAreaView>
   );
 }
 
-async function _getGoalValues(k) {
+function WorkOut({ route, navigation }) {
+  return (
+    <View style={styles.scrollStyle}>
+      <Image
+        style={styles.logo}
+        source={require("./assets/GrypLogoWhite.png")}
+      />
+      <FlatList
+        data={route.params}
+        numColumns={1}
+        renderItem={({ item }) => (
+          <Set name={item.name} type={item.type} quant={item.quant} />
+        )}
+      />
+    </View>
+  );
+}
+
+async function _getGoalValues() {
   try {
-    const goalJson = await AsyncStorage.getItem(k);
-    return JSON.parse(goalJson).goal;
+    const goalJson = await AsyncStorage.getItem("@GoalList");
+    return JSON.parse(goalJson);
   } catch (e) {
     console.log("failed to laod: " + e);
   }
@@ -199,8 +329,8 @@ function Goals({ navigation }) {
 
   useEffect(() => {
     const fetchData = async () => {
-      const data = await _getGoalValues("@GoalList");
-      setGoalArr(data);
+      const data = await _getGoalValues();
+      setGoalArr(data.goal);
     };
     fetchData();
   }, []);
@@ -226,7 +356,6 @@ function Goals({ navigation }) {
           achieved={item.achieved}
         />
       ))}
-      <GoalItem k={5} date={"2023/03/23"} title={"test"} achieved={true} />
     </ScrollView>
   );
 }
@@ -234,8 +363,8 @@ function Goals({ navigation }) {
 function NewGoal({ navigation }) {
   const [name, setName] = useState("");
   const [date, setDate] = useState(new Date());
-  const [mode, setMode] = useState("date");
-  const [show, setShow] = useState(false);
+  const [days, setDays] = useState(0);
+  const [months, setMonths] = useState(0);
 
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate || date;
@@ -262,6 +391,81 @@ function NewGoal({ navigation }) {
     </View>
   );
 }
+
+// <View style={styles.newExcersizeSelectView}>
+//           <View style={styles.excersizePickerView}>
+//             <Picker
+//               style={styles.excersizeDropdown}
+//               selectedValue={days}
+//               onValueChange={(itemValue, itemIndex) => setDays(itemValue)}
+//             >
+//               <Picker.Item label="0 day" value={0} />
+//               <Picker.Item label="1 day" value={1} />
+//               <Picker.Item label="2 day" value={2} />
+//               <Picker.Item label="3 day" value={3} />
+//               <Picker.Item label="4 day" value={4} />
+//               <Picker.Item label="5 day" value={5} />
+//               <Picker.Item label="6 day" value={6} />
+//               <Picker.Item label="7 day" value={7} />
+//               <Picker.Item label="8 day" value={8} />
+//               <Picker.Item label="9 day" value={9} />
+//               <Picker.Item label="10 day" value={10} />
+//               <Picker.Item label="11 day" value={11} />
+//               <Picker.Item label="12 day" value={12} />
+//               <Picker.Item label="13 day" value={13} />
+//               <Picker.Item label="14 day" value={14} />
+//               <Picker.Item label="15 day" value={15} />
+//               <Picker.Item label="16 day" value={16} />
+//               <Picker.Item label="17 day" value={17} />
+//               <Picker.Item label="18 day" value={18} />
+//               <Picker.Item label="19 day" value={19} />
+//               <Picker.Item label="20 day" value={20} />
+//               <Picker.Item label="21 day" value={21} />
+//               <Picker.Item label="22 day" value={22} />
+//               <Picker.Item label="23 day" value={23} />
+//               <Picker.Item label="24 day" value={24} />
+//               <Picker.Item label="25 day" value={25} />
+//               <Picker.Item label="26 day" value={26} />
+//               <Picker.Item label="27 day" value={27} />
+//               <Picker.Item label="28 day" value={28} />
+//               <Picker.Item label="29 day" value={29} />
+//               <Picker.Item label="30 day" value={30} />
+//               <Picker.Item label="31 day" value={31} />
+//             </Picker>
+//           </View>
+//           <View style={styles.excersizePickerView}>
+//             <Picker
+//               style={styles.excersizeDropdown}
+//               selectedValue={months}
+//               onValueChange={(itemValue, itemIndex) => setMonths(itemValue)}
+//             >
+//               <Picker.Item label="0 months" value={0} />
+//               <Picker.Item label="1 months" value={1} />
+//               <Picker.Item label="2 months" value={2} />
+//               <Picker.Item label="3 months" value={3} />
+//               <Picker.Item label="4 months" value={4} />
+//               <Picker.Item label="5 months" value={5} />
+//               <Picker.Item label="6 months" value={6} />
+//               <Picker.Item label="7 months" value={7} />
+//               <Picker.Item label="8 months" value={8} />
+//               <Picker.Item label="9 months" value={9} />
+//               <Picker.Item label="10 months" value={10} />
+//               <Picker.Item label="11 months" value={11} />
+//               <Picker.Item label="12 months" value={12} />
+//               <Picker.Item label="13 months" value={13} />
+//               <Picker.Item label="14 months" value={14} />
+//               <Picker.Item label="15 months" value={15} />
+//               <Picker.Item label="16 months" value={16} />
+//               <Picker.Item label="17 months" value={17} />
+//               <Picker.Item label="18 months" value={18} />
+//               <Picker.Item label="19 months" value={19} />
+//               <Picker.Item label="20 months" value={20} />
+//               <Picker.Item label="21 months" value={21} />
+//               <Picker.Item label="22 months" value={22} />
+//               <Picker.Item label="23 months" value={23} />
+//             </Picker>
+//           </View>
+//         </View>
 
 function Settings({ navigation }) {
   return (
@@ -398,11 +602,9 @@ export default function App() {
   useEffect(() => {
     (async () => {
       let t = await AsyncStorage.getItem("@LogInfo");
-      // console.log("log = " + t);
       if (t == null) {
         try {
-          const jsonValueLog = JSON.stringify(log);
-          await AsyncStorage.setItem("@LogInfo", jsonValueLog);
+          await AsyncStorage.setItem("@LogInfo", JSON.stringify(log));
         } catch (e) {
           console.log("error with log saving: " + e);
         }
@@ -415,9 +617,20 @@ export default function App() {
       let g = await AsyncStorage.getItem("@GoalList");
       if (g == null) {
         try {
-          // const jsonValueGoal = JSON.stringify();
-          // await AsyncStorage.setItem("@GoalList", jsonValueGoal);
           await AsyncStorage.setItem("@GoalList", JSON.stringify(gljson));
+        } catch (e) {
+          console.log("error with log saving: " + e);
+        }
+      }
+    })();
+  }, []);
+
+  useEffect(() => {
+    (async () => {
+      let g = await AsyncStorage.getItem("@Training");
+      if (g == null) {
+        try {
+          await AsyncStorage.setItem("@Training", JSON.stringify(trainArr));
         } catch (e) {
           console.log("error with log saving: " + e);
         }
@@ -436,6 +649,7 @@ export default function App() {
         <Stack.Screen name="Log Page" component={LogPage} />
         <Stack.Screen name="New goal" component={NewGoal} />
         <Stack.Screen name="Work Out" component={WorkOut} />
+        <Stack.Screen name="New Workout" component={NewWorkOut} />
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -448,7 +662,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-
   scrollStyle: {
     width: "100%",
     height: "100%",
@@ -480,14 +693,12 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     resizeMode: "stretch",
   },
-
   homeImage: {
     alignSelf: "center",
     width: "100%",
     marginVertical: 10,
     height: 150,
   },
-
   newGoal: {
     width: "90%",
     height: 30,
@@ -496,7 +707,6 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     marginBottom: 10,
   },
-
   newGoalText: {
     fontSize: 18,
     textAlign: "center",
@@ -576,5 +786,54 @@ const styles = StyleSheet.create({
     margin: 4,
     borderRadius: 5,
     backgroundColor: "#808080",
+  },
+  newExcersizeView: {
+    height: 180,
+    backgroundColor: "#FFFFF0",
+    padding: 10,
+    borderRadius: 10,
+    paddingVertical: 10,
+    marginVertical: 5,
+    marginHorizontal: 10,
+    alignItems: "center",
+    borderWidth: 1,
+  },
+  newExcersizeNameView: {
+    height: 45,
+    width: "95%",
+  },
+  newExcersizeSelectView: {
+    height: 70,
+    width: "95%",
+    flexDirection: "row",
+  },
+  excersizePickerView: {
+    width: "50%",
+    height: 62,
+    borderColor: "black",
+    borderWidth: 1,
+    borderRadius: 15,
+    backgroundColor: "white",
+  },
+  excersizeDropdown: {
+    alignContent: "center",
+    justifyContent: "center",
+    backgroundColor: "white",
+    marginVertical: 5,
+    marginHorizontal: 10,
+  },
+  counter: {
+    alignItems: "center",
+    justifyContent: "center",
+    width: "50%",
+  },
+  saveElement: {
+    width: "90%",
+    height: 30,
+    backgroundColor: "#7CFC00",
+    borderRadius: 10,
+    alignSelf: "center",
+    marginBottom: 10,
+    borderWidth: 1,
   },
 });

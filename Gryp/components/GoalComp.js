@@ -16,7 +16,6 @@ async function _getGoalValues() {
 async function updateGoals(list) {
   let string = JSON.stringify(list);
   AsyncStorage.setItem("@GoalList", string);
-  console.log(string);
 }
 
 const GoalItem = (props) => {
@@ -36,13 +35,11 @@ const GoalItem = (props) => {
       setIsCompleted(false);
       let temp = goalArr;
       temp.goal[props.k].achieved = false;
-      console.log(temp.goal[props.k].achieved);
       updateGoals(temp);
     } else {
       setIsCompleted(true);
       let temp = goalArr;
       temp.goal[props.k].achieved = true;
-      console.log(temp.goal[props.k].achieved);
       updateGoals(temp);
     }
   };

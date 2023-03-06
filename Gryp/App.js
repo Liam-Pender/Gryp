@@ -35,7 +35,7 @@ const log = {
   Climbing_logs: [
     {
       entry_name: "This is log 1",
-      date: "23/04/2022",
+      date: new Date("2022/04/23"),
       info: "Climbed today on a slab, it went well, fell off 3 times, I am now extending the length of this to check multi line printing",
       imagePath: "",
       grade: "4",
@@ -43,7 +43,7 @@ const log = {
     },
     {
       entry_name: "This is log 2",
-      date: "",
+      date: new Date("2023/02/23"),
       info: "climbed today on an overhand, fell off 10 times ",
       imagePath: "",
       grade: "1",
@@ -51,7 +51,7 @@ const log = {
     },
     {
       entry_name: "And this is log 3",
-      date: "22/03/2022",
+      date: new Date("2023/12/02"),
       info: "blah blah blah",
       imagePath: "",
       grade: "2",
@@ -93,8 +93,6 @@ const trainArr = {
   ],
 };
 
-// const gl = JSON.parse(gljson);
-
 function HomeScreen({ navigation }) {
   return (
     <ScrollView style={styles.scrollStyle}>
@@ -123,7 +121,7 @@ function HomeScreen({ navigation }) {
       <View style={styles.homeScreenCells}>
         <TouchableOpacity
           style={styles.homeScreenTouchable}
-          onPress={() => navigation.navigate("ClimbingLogScreen")}
+          onPress={() => navigation.navigate("Climbing Log Screen")}
         >
           <ImageBackground
             style={styles.homePageImages}
@@ -563,61 +561,116 @@ function Settings({ navigation }) {
   );
 }
 
+async function _getLogValues() {
+  try {
+    const goalJson = await AsyncStorage.getItem("@LogInfo");
+    return JSON.parse(goalJson);
+  } catch (e) {
+    console.log("failed to laod: " + e);
+  }
+}
+
 function ClimbingLogScreen({ navigation }) {
+  const [logArr, setLogArr] = useState([]);
+  const [state, setState] = useState(false);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await _getLogValues();
+      setLogArr(data.Climbing_logs);
+    };
+    fetchData();
+  }, []);
+
+  const onRefresh = useCallback(() => {
+    setState(true);
+    const fetchData = async () => {
+      const data = await _getLogValues();
+      setLogArr(data.Climbing_logs);
+    };
+    fetchData();
+    setTimeout(() => {
+      setState(false);
+    }, 2000);
+  }, []);
+
   return (
-    <ScrollView style={styles.scrollStyle}>
+    <View style={styles.scrollStyle}>
       <Image
         style={styles.logo}
         source={require("./assets/GrypLogoWhite.png")}
       />
-      <TableView>
-        {LogInfo.Climbing_logs.map((section, i) => (
-          <Section
-            name={"climbing log"}
-            hideSeparator="false"
-            separatorTintColor={"transparent"}
-            headerComponent
-          >
-            <ClimbingLogCell
-              key={i}
-              logEntryName={section.entry_name}
-              date={section.date}
-              grade={section.grade}
-              logInfo={section.info}
-              action={() => navigation.navigate("Log Page", { k: i })}
-            />
-          </Section>
-        ))}
-      </TableView>
-    </ScrollView>
+      <TouchableOpacity
+        style={styles.newGoal}
+        onPress={() => navigation.navigate("New Log")}
+      >
+        <Text style={styles.newGoalText}>New Log entry</Text>
+      </TouchableOpacity>
+      <FlatList
+        data={logArr}
+        extraData={logArr}
+        numColumns={1}
+        renderItem={({ item, index }) => (
+          <ClimbingLogCell
+            key={index}
+            logEntryName={item.entry_name}
+            date={item.date}
+            grade={item.grade}
+            logInfo={item.info}
+            action={() => navigation.navigate("Log Page", { k: index })}
+          />
+        )}
+        refreshing={state}
+        onRefresh={onRefresh}
+      />
+    </View>
   );
 }
 
 function LogPage({ route, navigation }) {
   const { k } = route.params;
-  const [name, setName] = useState(LogInfo.Climbing_logs[k].entry_name);
-  const [date, setDate] = useState(LogInfo.Climbing_logs[k].date);
-  const [info, setInfo] = useState(LogInfo.Climbing_logs[k].info);
-  const [image, setImage] = useState(LogInfo.Climbing_logs[k].imagePath);
-  const [grade, setGrade] = useState(LogInfo.Climbing_logs[k].grade);
-  const [isCompleted, setCompleted] = useState(
-    LogInfo.Climbing_logs[k].completed
-  );
+  const [logInfo, setLogInfo] = useState([]);
+  const [name, setName] = useState("");
+  const [date, setDate] = useState("");
+  const [info, setInfo] = useState("");
+  const [image, setImage] = useState("");
+  const [grade, setGrade] = useState();
+  const [isCompleted, setCompleted] = useState(false);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await _getLogValues();
+      setLogInfo(data);
+      setName(data.Climbing_logs[k].entry_name);
+      setDate(data.Climbing_logs[k].date.slice(0, 10));
+      setInfo(data.Climbing_logs[k].info);
+      setImage(data.Climbing_logs[k].imagePath);
+      setGrade(data.Climbing_logs[k].grade);
+      setCompleted(data.Climbing_logs[k].completed);
+    };
+    fetchData();
+  }, []);
+
+  const save = async () => {
+    let temp = logInfo;
+    temp.Climbing_logs[k].name = name;
+    temp.Climbing_logs[k].date = date;
+    temp.Climbing_logs[k].info = info;
+    temp.Climbing_logs[k].imagePath = image;
+    temp.Climbing_logs[k].grade = grade;
+    temp.Climbing_logs[k].completed = isCompleted;
+    await AsyncStorage.setItem("@LogInfo", JSON.stringify(temp));
+    navigation.navigate("Climbing Log Screen");
+  };
 
   return (
     <ScrollView style={styles.logStyle}>
       <View>
-        <Text> Log Name</Text>
-        <TextInput
-          style={styles.logNameText}
-          onChangeText={async (name) => {
-            setName(name);
-          }}
-          value={name}
-          placeholder={"log " + k}
-        />
+        <Text style={styles.goalNameText}> Log Name</Text>
+        <Text style={styles.logNameText}>{name}</Text>
         <View style={{ flexDirection: "row" }}>
-          <Text style={styles.dateText}>{date}</Text>
+          <Text style={styles.logNameText}>Date</Text>
+          <Text style={styles.logNameText}>{date}</Text>
         </View>
 
         <View style={styles.pickerView}>
@@ -662,16 +715,109 @@ function LogPage({ route, navigation }) {
         <Button
           style={styles.saveButton}
           title="Save changes"
-          onPress={() => {
-            console.log("saving new data");
-            console.log(name);
-            LogInfo.Climbing_logs[k].name = name;
-            LogInfo.Climbing_logs[k].date = date;
-            LogInfo.Climbing_logs[k].info = info;
-            LogInfo.Climbing_logs[k].imagePath = image;
-            LogInfo.Climbing_logs[k].grade = grade;
-            LogInfo.Climbing_logs[k].completed = isCompleted;
+          onPress={() => save()}
+        />
+      </View>
+    </ScrollView>
+  );
+}
+
+async function addLog(list, l) {
+  list.Climbing_logs.push(l);
+  let string = JSON.stringify(list);
+  AsyncStorage.setItem("@LogInfo", string);
+}
+
+function Newlog({ navigation }) {
+  const [logInfo, setLogInfo] = useState([]);
+  const [name, setName] = useState("");
+  const [info, setInfo] = useState("");
+  const [grade, setGrade] = useState(1);
+  const [isCompleted, setCompleted] = useState(false);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await _getLogValues();
+      setLogInfo(data);
+    };
+    fetchData();
+  }, []);
+
+  const newLog = () => {
+    let d = new Date();
+    console.log(d);
+    let logJson = {
+      entry_name: `${name}`,
+      date: d,
+      info: `${info}`,
+      imagePath: "",
+      grade: `${grade}`,
+      completed: `${isCompleted}`,
+    };
+    return logJson;
+  };
+
+  const makeAndNavigate = () => {
+    addLog(logInfo, newLog());
+    navigation.navigate("Climbing Log Screen");
+  };
+
+  return (
+    <ScrollView style={styles.logStyle}>
+      <View>
+        <Text style={styles.goalNameText}> Log Name</Text>
+        <TextInput
+          style={styles.goalNameText}
+          onChangeText={async (name) => {
+            setName(name);
           }}
+          value={name}
+          placeholder={"Log Name"}
+        />
+
+        <View style={styles.pickerView}>
+          <Picker
+            style={styles.dropdown}
+            selectedValue={grade}
+            onValueChange={(itemValue, itemIndex) => setGrade(itemValue)}
+          >
+            <Picker.Item label="V1" value="1" />
+            <Picker.Item label="V2" value="2" />
+            <Picker.Item label="V3" value="3" />
+            <Picker.Item label="V4" value="4" />
+            <Picker.Item label="V5" value="5" />
+            <Picker.Item label="V6" value="6" />
+            <Picker.Item label="V7" value="7" />
+            <Picker.Item label="V8" value="8" />
+            <Picker.Item label="V9" value="9" />
+            <Picker.Item label="V10" value="10" />
+            <Picker.Item label="V11" value="11" />
+          </Picker>
+        </View>
+        <ScrollView style={styles.logEntryScroll}>
+          <TextInput
+            multiline={true}
+            onChangeText={async (info) => {
+              setInfo(info);
+            }}
+            value={info}
+            placeholder={""}
+          />
+        </ScrollView>
+        <View style={styles.checkboxContainer}>
+          <Text> Route Completed </Text>
+          <CheckBox
+            value={isCompleted}
+            onValueChange={setCompleted}
+            style={styles.checkbox}
+          />
+        </View>
+      </View>
+      <View style={styles.saveButton}>
+        <Button
+          style={styles.saveButton}
+          title="Save"
+          onPress={() => makeAndNavigate()}
         />
       </View>
     </ScrollView>
@@ -729,9 +875,13 @@ export default function App() {
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="Training" component={Training} />
         <Stack.Screen name="Setting" component={Settings} />
-        <Stack.Screen name="ClimbingLogScreen" component={ClimbingLogScreen} />
+        <Stack.Screen
+          name="Climbing Log Screen"
+          component={ClimbingLogScreen}
+        />
         <Stack.Screen name="Goals" component={Goals} />
         <Stack.Screen name="Log Page" component={LogPage} />
+        <Stack.Screen name="New Log" component={Newlog} />
         <Stack.Screen name="New goal" component={NewGoal} />
         <Stack.Screen name="Work Out" component={WorkOut} />
         <Stack.Screen name="New Workout" component={NewWorkOut} />

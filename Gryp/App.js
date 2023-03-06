@@ -549,14 +549,65 @@ function NewGoal({ navigation }) {
   );
 }
 
+async function _getSettingInfo() {
+  try {
+    const username = await AsyncStorage.getItem("@Username");
+    return username;
+  } catch (e) {
+    console.log("failed to laod: " + e);
+  }
+}
+
 function Settings({ navigation }) {
+  const [username, setUsername] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await _getSettingInfo();
+      setUsername(data);
+    };
+    fetchData();
+  }, []);
+
+  const save = async () => {
+    await AsyncStorage.setItem("@Username", username);
+  };
+
   return (
     <ScrollView style={styles.scrollStyle}>
       <Image
         style={styles.logo}
         source={require("./assets/GrypLogoWhite.png")}
       />
-      <Text>Hello {JSONdata.name}</Text>
+      <View
+        style={{
+          width: "95%",
+          height: 100,
+          backgroundColor: "white",
+          borderRadius: 10,
+          borderWidth: 1,
+          alignItems: "center",
+        }}
+      >
+        <Text style={{ marginHorizontal: 10, fontSize: 20 }}>Username</Text>
+        <TextInput
+          style={{
+            width: "90%",
+            borderWidth: 1,
+            borderRadius: 5,
+            fontSize: 24,
+          }}
+          multiline={true}
+          onChangeText={async (username) => {
+            setUsername(username);
+          }}
+          value={username}
+          placeholder={"Climber"}
+        />
+      </View>
+      <TouchableOpacity style={styles.saveElement}>
+        <Text style={styles.newGoalText}>Save</Text>
+      </TouchableOpacity>
     </ScrollView>
   );
 }
@@ -862,6 +913,19 @@ export default function App() {
       if (g == null) {
         try {
           await AsyncStorage.setItem("@Training", JSON.stringify(trainArr));
+        } catch (e) {
+          console.log("error with log saving: " + e);
+        }
+      }
+    })();
+  }, []);
+
+  useEffect(() => {
+    (async () => {
+      let g = await AsyncStorage.getItem("@Username");
+      if (g == null) {
+        try {
+          await AsyncStorage.setItem("@Username", "User");
         } catch (e) {
           console.log("error with log saving: " + e);
         }

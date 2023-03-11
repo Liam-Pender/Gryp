@@ -14,21 +14,16 @@ import {
 } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { Section, TableView } from "react-native-tableview-simple";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 // import AsyncStorage from "@react-native-community/async-storage";
 import React, { useEffect, useState, useCallback } from "react";
-import LogInfo from "./log.json";
 import { ClimbingLogCell } from "./components/ClimbingLogCell.js";
 import { GoalItem } from "./components/GoalComp";
 import { Picker } from "@react-native-picker/picker";
 import CheckBox from "expo-checkbox";
-import DateTimePicker from "@react-native-community/datetimepicker";
-import Spinner from "react-native-loading-spinner-overlay";
 import { WorkOutCell } from "./components/Training";
 import { Set } from "./components/Set";
 import NumericInput from "react-native-numeric-input";
-import DatePicker from "react-native-date-picker";
 
 const Stack = createNativeStackNavigator();
 const log = {

@@ -1,8 +1,29 @@
 import React, { useState, useEffect } from "react";
-import { Cell } from "react-native-tableview-simple";
 import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
 import CheckBox from "expo-checkbox";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+
+function timeConverterDate(UNIX_timestamp) {
+  var a = new Date(UNIX_timestamp * 1000);
+  var months = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+  var month = months[a.getMonth()];
+  var date = a.getDate();
+  var formattedDate = date + " " + month;
+  return formattedDate;
+}
 
 async function _getGoalValues() {
   try {
@@ -63,7 +84,7 @@ const GoalItem = (props) => {
         </View>
         <View style={styles.deadlineBox}>
           <Text>Deadline:</Text>
-          <Text style={styles.dateText}>{props.date}</Text>
+          <Text style={styles.dateText}>{timeConverterDate(deadline)}</Text>
         </View>
       </View>
     );
@@ -80,7 +101,7 @@ const GoalItem = (props) => {
         </View>
         <View style={styles.deadlineBox}>
           <Text>Deadline:</Text>
-          <Text style={styles.dateText}>{props.date}</Text>
+          <Text style={styles.dateText}>{timeConverterDate(deadline)}</Text>
         </View>
       </View>
     );
@@ -149,7 +170,7 @@ const styles = StyleSheet.create({
     width: "20%",
   },
   dateText: {
-    fontSize: 11,
+    fontSize: 18,
   },
 });
 

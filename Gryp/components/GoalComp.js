@@ -53,23 +53,35 @@ const GoalItem = (props) => {
   if (deadline < today && isCompleted == false) {
     return (
       <View style={styles.goalItemOverdue}>
-        <CheckBox
-          value={isCompleted}
-          onValueChange={updateBool}
-          style={styles.tickBox}
-        />
-        <Text style={styles.goalText}>{props.title}</Text>
+        <View style={{ width: "80%", flexDirection: "row" }}>
+          <CheckBox
+            value={isCompleted}
+            onValueChange={updateBool}
+            style={styles.tickBox}
+          />
+          <Text style={styles.goalText}>{props.title}</Text>
+        </View>
+        <View style={styles.deadlineBox}>
+          <Text>Deadline:</Text>
+          <Text style={styles.dateText}>{props.date}</Text>
+        </View>
       </View>
     );
   } else if (isCompleted == false) {
     return (
       <View style={styles.goalItem}>
-        <CheckBox
-          value={isCompleted}
-          onValueChange={updateBool}
-          style={styles.tickBox}
-        />
-        <Text style={styles.goalText}>{props.title}</Text>
+        <View style={{ width: "80%", flexDirection: "row" }}>
+          <CheckBox
+            value={isCompleted}
+            onValueChange={updateBool}
+            style={styles.tickBox}
+          />
+          <Text style={styles.goalText}>{props.title}</Text>
+        </View>
+        <View style={styles.deadlineBox}>
+          <Text>Deadline:</Text>
+          <Text style={styles.dateText}>{props.date}</Text>
+        </View>
       </View>
     );
   } else {
@@ -132,6 +144,12 @@ const styles = StyleSheet.create({
   goalText: {
     fontSize: 18,
     paddingLeft: 5,
+  },
+  deadlineBox: {
+    width: "20%",
+  },
+  dateText: {
+    fontSize: 11,
   },
 });
 

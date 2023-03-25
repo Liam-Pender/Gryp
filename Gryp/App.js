@@ -29,6 +29,7 @@ import * as Location from "expo-location";
 
 const Stack = createNativeStackNavigator();
 const log = {
+  // this is data designed to fill out the app for examples
   Climbing_logs: [
     {
       entry_name: "This is log 1",
@@ -66,9 +67,9 @@ const log = {
 const gljson = {
   goal: [
     { title: "Goal 1", date: "2023/03/23", achieved: false },
-    { title: "Goal 2", date: "2023/01/23", achieved: false },
+    { title: "Goal 2", date: "2023/05/23", achieved: false },
   ],
-};
+}; // example data
 
 const trainArr = {
   workOuts: [
@@ -94,7 +95,7 @@ const trainArr = {
       ],
     },
   ],
-};
+}; // defualt work outs and example data
 
 function HomeScreen({ navigation }) {
   return (
@@ -159,7 +160,10 @@ function HomeScreen({ navigation }) {
     </ScrollView>
   );
 }
-
+/**
+ * @returns the parsed data for the training from the phone storage
+ *
+ */
 async function _getTrainingValues() {
   try {
     const trainJson = await AsyncStorage.getItem("@Training");
@@ -169,6 +173,11 @@ async function _getTrainingValues() {
   }
 }
 
+/**
+ * Saves the new work out to the phone memory
+ * @param {*} list input list of the excersises for the work out regime
+ * @param {*} name the name of the work out
+ */
 async function _saveWorkOut(list, name) {
   let temp = await _getTrainingValues();
   temp.workOuts.push({ Name: name, contents: list });
@@ -176,6 +185,9 @@ async function _saveWorkOut(list, name) {
   await AsyncStorage.setItem("@Training", JSON.stringify(temp));
 }
 
+/**
+ * The "Training" or work out regime to do lists selection page
+ */
 function Training({ navigation }) {
   // changed from Calendar to training
 
@@ -230,7 +242,9 @@ function Training({ navigation }) {
     </View>
   );
 }
-
+/**
+ * The New work out page that lets the user make a new work out
+ */
 function NewWorkOut({ navigation }) {
   const [newArr, setNewArray] = useState([]);
   const [name, setName] = useState("");
@@ -316,6 +330,9 @@ function NewWorkOut({ navigation }) {
   );
 }
 
+/**
+ * page for the to do check list for each work out regime
+ */
 function WorkOut({ route, navigation }) {
   return (
     <View style={styles.scrollStyle}>
@@ -335,6 +352,10 @@ function WorkOut({ route, navigation }) {
   );
 }
 
+/**
+ *
+ * @returns JSON parsed data of the goals from the phone memory
+ */
 async function _getGoalValues() {
   try {
     const goalJson = await AsyncStorage.getItem("@GoalList");
@@ -344,6 +365,9 @@ async function _getGoalValues() {
   }
 }
 
+/**
+ * The page that displays the goals 
+ */
 function Goals({ navigation }) {
   const [goalArr, setGoalArr] = useState([]);
   const [state, setState] = useState(false);
@@ -404,18 +428,32 @@ function Goals({ navigation }) {
   );
 }
 
+/**
+ * 
+ * @param {*} d number of days to add to current
+ * @param {*} m number of 30 day months to add to current
+ * @returns the adjusted date
+ */
 function addDays(d, m) {
   let curr = new Date();
   curr.setDate(curr.getDate() + d + m * 30);
   return curr;
 }
 
+/**
+ * 
+ * @param {*} list the existing data that exists in the phone data 
+ * @param {*} g the new goal JSON 
+ */
 async function addGoal(list, g) {
   list.goal.push(g);
   let string = JSON.stringify(list);
   AsyncStorage.setItem("@GoalList", string);
 }
 
+/**
+ * page that lets the user add new goal to the goal list
+ */
 function NewGoal({ navigation }) {
   const [name, setName] = useState("");
   const [date, setDate] = useState(new Date());
@@ -552,6 +590,10 @@ function NewGoal({ navigation }) {
   );
 }
 
+/**
+ * 
+ * @returns Username info
+ */
 async function _getSettingInfo() {
   try {
     const username = await AsyncStorage.getItem("@Username");
@@ -561,6 +603,9 @@ async function _getSettingInfo() {
   }
 }
 
+/**
+ * Settings page, only really shows the users username
+ */
 function Settings({ navigation }) {
   const [username, setUsername] = useState(null);
 
@@ -615,6 +660,10 @@ function Settings({ navigation }) {
   );
 }
 
+/**
+ * 
+ * @returns JSON object of the logs saved to the phone.
+ */
 async function _getLogValues() {
   try {
     const goalJson = await AsyncStorage.getItem("@LogInfo");
@@ -624,6 +673,9 @@ async function _getLogValues() {
   }
 }
 
+/**
+ *  Displays list of climbing logs saved to phone
+ */
 function ClimbingLogScreen({ navigation }) {
   const [logArr, setLogArr] = useState([]);
   const [state, setState] = useState(false);
@@ -681,6 +733,9 @@ function ClimbingLogScreen({ navigation }) {
   );
 }
 
+/**
+ * Displays the information and allows the user to alter the information of a selected log entry, includes Map at bottom
+ */
 function LogPage({ route, navigation }) {
   const { k } = route.params;
   const [logInfo, setLogInfo] = useState([]);
@@ -866,12 +921,20 @@ function LogPage({ route, navigation }) {
   }
 }
 
+/**
+ * 
+ * @param {*} list existing data held on phone
+ * @param {*} l new log entry JSON file
+ */
 async function addLog(list, l) {
   list.Climbing_logs.push(l);
   let string = JSON.stringify(list);
   AsyncStorage.setItem("@LogInfo", string);
 }
 
+/**
+ * page to allow user to make a new log entry
+ */
 function Newlog({ navigation }) {
   const [logInfo, setLogInfo] = useState([]);
   const [name, setName] = useState("");
@@ -1076,6 +1139,9 @@ function Newlog({ navigation }) {
   }
 }
 
+/**
+ * Main starting page of the phone app
+ */
 export default function App() {
   // useEffect(() => {
   //   // used to refresh data

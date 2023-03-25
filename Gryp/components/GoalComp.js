@@ -3,6 +3,11 @@ import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
 import CheckBox from "expo-checkbox";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+/**
+ *
+ * @param {*} UNIX_timestamp input timestamp
+ * @returns Readable text version of the timestamp entered
+ */
 function timeConverterDate(UNIX_timestamp) {
   var a = new Date(UNIX_timestamp * 1000);
   var months = [
@@ -25,6 +30,10 @@ function timeConverterDate(UNIX_timestamp) {
   return formattedDate;
 }
 
+/**
+ *
+ * @returns JSON object of the Goal List data saved on phone
+ */
 async function _getGoalValues() {
   try {
     const goalJson = await AsyncStorage.getItem("@GoalList");
@@ -34,11 +43,18 @@ async function _getGoalValues() {
   }
 }
 
+/**
+ * Saves changees to the Goal list
+ * @param {*} list existing data for goal list that was saved on phone before changes
+ */
 async function updateGoals(list) {
   let string = JSON.stringify(list);
   AsyncStorage.setItem("@GoalList", string);
 }
 
+/**
+ * Goal element, displays the info about the particular goal
+ */
 const GoalItem = (props) => {
   const [goalArr, setGoalArr] = useState([]);
 

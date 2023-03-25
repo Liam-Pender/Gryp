@@ -2,6 +2,9 @@ import React from "react";
 import { Cell } from "react-native-tableview-simple";
 import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
 
+/**
+ * Element that displays the summurised info about a log
+ */
 const ClimbingLogCell = (props) => (
   <Cell
     {...props}

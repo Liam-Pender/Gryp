@@ -4,6 +4,9 @@ import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
 import CheckBox from "expo-checkbox";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+/**
+ * Cell to be displayed on training page, with name of work out and opens work out page on press
+ */
 const WorkOutCell = (props) => {
   return (
     <View style={styles.trainingCell}>

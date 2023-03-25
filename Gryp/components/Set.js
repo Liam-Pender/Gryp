@@ -5,6 +5,9 @@ import CheckBox from "expo-checkbox";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Day from "react-native-calendars/src/calendar/day";
 
+/**
+ * The individual checklist elements for the work out routines.
+ */
 const Set = (props) => {
   const [isCompleted, setCompleted] = useState(false);
   const [isPlaying, setIsPlayer] = useState(false);
@@ -85,86 +88,10 @@ const Set = (props) => {
   }
 };
 
-{
-  /* <Countdown
-            startTime={startTime}
-            duration={props.quant}
-            isRunning={isPlaying}
-          /> */
-}
-
-// if (isCompleted == false) {
-//   return (
-//     <View style={styles.setItemTimer}>
-//       <TouchableOpacity
-//         style={styles.nameArea}
-//         onPress={() => {
-//           setIsPlayer(true);
-//           let d = new Date();
-//           setStartTime(d.getTime() / 1000);
-//         }}
-//       >
-//         <Text style={styles.setText}>{props.name}</Text>
-//       </TouchableOpacity>
-//       {console.log("blah")}
-//     </View>
-//   );
-
 function t(st, dur) {
   let d = new Date().getTime() / 1000;
   let rem = parseInt(st + dur - d);
   return rem;
-}
-
-// export const Countdown = (props) => {
-//   if (props.isRunning && t(props.startTime, props.duration) > -1) {
-//     return (
-//       <View style={styles.countDownTimer}>
-//         <Text style={styles.setText}>{t(props.startTime, props.duration)}</Text>
-//         <Text style={styles.secondsText}>Seconds remaining</Text>
-//       </View>
-//     );
-//   } else if (props.isRunning == false) {
-//     return (
-//       <View style={styles.countDownTimer}>
-//         <Text style={styles.setText}>{props.duration}</Text>
-//         <Text style={styles.secondsText}>Seconds</Text>
-//       </View>
-//     );
-//   } else if (t(props.startTime, props.duration) < 0) {
-//     return (
-//       <View style={styles.countDownTimer}>
-//         <Text style={styles.setText}>0</Text>
-//         <Text style={styles.secondsText}>Seconds</Text>
-//       </View>
-//     );
-//   }
-// };
-
-function countdown(startTime, duration, isRunning) {
-  console.log("blah");
-  if (isRunning && t(startTime, duration) > -1) {
-    return (
-      <View style={styles.countDownTimer}>
-        <Text style={styles.setText}>{t(startTime, duration)}</Text>
-        <Text style={styles.secondsText}>Seconds remaining</Text>
-      </View>
-    );
-  } else if (isRunning == false) {
-    return (
-      <View style={styles.countDownTimer}>
-        <Text style={styles.setText}>{duration}</Text>
-        <Text style={styles.secondsText}>Seconds</Text>
-      </View>
-    );
-  } else if (t(startTime, duration) < 0) {
-    return (
-      <View style={styles.countDownTimer}>
-        <Text style={styles.setText}>0</Text>
-        <Text style={styles.secondsText}>Seconds</Text>
-      </View>
-    );
-  }
 }
 
 const styles = StyleSheet.create({

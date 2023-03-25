@@ -24,6 +24,8 @@ import CheckBox from "expo-checkbox";
 import { WorkOutCell } from "./components/Training";
 import { Set } from "./components/Set";
 import NumericInput from "react-native-numeric-input";
+import MapView, { Marker } from "react-native-maps";
+import * as Location from "expo-location";
 
 const Stack = createNativeStackNavigator();
 const log = {
@@ -35,6 +37,8 @@ const log = {
       imagePath: "",
       grade: "4",
       completed: false,
+      gpsLat: 51.585488342423346,
+      gpsLong: -0.06075804475075042,
     },
     {
       entry_name: "This is log 2",
@@ -43,6 +47,8 @@ const log = {
       imagePath: "",
       grade: "1",
       completed: false,
+      gpsLat: 51.585488342423346,
+      gpsLong: -0.06075804475075042,
     },
     {
       entry_name: "And this is log 3",
@@ -51,6 +57,8 @@ const log = {
       imagePath: "",
       grade: "2",
       completed: true,
+      gpsLat: 51.585488342423346,
+      gpsLong: -0.06075804475075042,
     },
   ],
 };
@@ -682,6 +690,9 @@ function LogPage({ route, navigation }) {
   const [image, setImage] = useState("");
   const [grade, setGrade] = useState();
   const [isCompleted, setCompleted] = useState(false);
+  const [gpsLong, setGPSLong] = useState(0);
+  const [gpsLat, setGPSLat] = useState(0);
+  const [mapVis, setMapVis] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -693,6 +704,8 @@ function LogPage({ route, navigation }) {
       setImage(data.Climbing_logs[k].imagePath);
       setGrade(data.Climbing_logs[k].grade);
       setCompleted(data.Climbing_logs[k].completed);
+      setGPSLong(data.Climbing_logs[k].gpsLong);
+      setGPSLat(data.Climbing_logs[k].gpsLat);
     };
     fetchData();
   }, []);
@@ -709,63 +722,148 @@ function LogPage({ route, navigation }) {
     navigation.navigate("Climbing Log Screen");
   };
 
-  return (
-    <ScrollView style={styles.logStyle}>
-      <View>
-        <Text style={styles.goalNameText}> Log Name</Text>
-        <Text style={styles.logNameText}>{name}</Text>
-        <View style={{ flexDirection: "row" }}>
-          <Text style={styles.logNameText}>Date</Text>
-          <Text style={styles.logNameText}>{date}</Text>
-        </View>
+  if (mapVis == false) {
+    return (
+      <ScrollView style={styles.logStyle}>
+        <View>
+          <Text style={styles.goalNameText}> Log Name</Text>
+          <Text style={styles.logNameText}>{name}</Text>
+          <View style={{ flexDirection: "row" }}>
+            <Text style={styles.logNameText}>Date</Text>
+            <Text style={styles.logNameText}>{date}</Text>
+          </View>
 
-        <View style={styles.pickerView}>
-          <Picker
-            style={styles.dropdown}
-            selectedValue={grade}
-            onValueChange={(itemValue, itemIndex) => setGrade(itemValue)}
-          >
-            <Picker.Item label="V1" value="1" />
-            <Picker.Item label="V2" value="2" />
-            <Picker.Item label="V3" value="3" />
-            <Picker.Item label="V4" value="4" />
-            <Picker.Item label="V5" value="5" />
-            <Picker.Item label="V6" value="6" />
-            <Picker.Item label="V7" value="7" />
-            <Picker.Item label="V8" value="8" />
-            <Picker.Item label="V9" value="9" />
-            <Picker.Item label="V10" value="10" />
-            <Picker.Item label="V11" value="11" />
-          </Picker>
+          <View style={styles.pickerView}>
+            <Picker
+              style={styles.dropdown}
+              selectedValue={grade}
+              onValueChange={(itemValue, itemIndex) => setGrade(itemValue)}
+            >
+              <Picker.Item label="V1" value="1" />
+              <Picker.Item label="V2" value="2" />
+              <Picker.Item label="V3" value="3" />
+              <Picker.Item label="V4" value="4" />
+              <Picker.Item label="V5" value="5" />
+              <Picker.Item label="V6" value="6" />
+              <Picker.Item label="V7" value="7" />
+              <Picker.Item label="V8" value="8" />
+              <Picker.Item label="V9" value="9" />
+              <Picker.Item label="V10" value="10" />
+              <Picker.Item label="V11" value="11" />
+            </Picker>
+          </View>
+          <ScrollView style={styles.logEntryScroll}>
+            <TextInput
+              multiline={true}
+              onChangeText={async (info) => {
+                setInfo(info);
+              }}
+              value={info}
+              placeholder={""}
+            />
+          </ScrollView>
+          <View style={styles.checkboxContainer}>
+            <Text> Route Completed </Text>
+            <CheckBox
+              value={isCompleted}
+              onValueChange={setCompleted}
+              style={styles.checkbox}
+            />
+          </View>
         </View>
-        <ScrollView style={styles.logEntryScroll}>
-          <TextInput
-            multiline={true}
-            onChangeText={async (info) => {
-              setInfo(info);
+        <View style={styles.mpContainer}>
+          <Button
+            style={styles.mapButton}
+            title="Show map"
+            onPress={() => setMapVis(true)}
+          />
+        </View>
+        <View style={styles.saveButton}>
+          <Button
+            style={styles.saveButton}
+            title="Save changes"
+            onPress={() => save()}
+          />
+        </View>
+      </ScrollView>
+    );
+  } else {
+    return (
+      <ScrollView style={styles.logStyle}>
+        <View>
+          <Text style={styles.goalNameText}> Log Name</Text>
+          <Text style={styles.logNameText}>{name}</Text>
+          <View style={{ flexDirection: "row" }}>
+            <Text style={styles.logNameText}>Date</Text>
+            <Text style={styles.logNameText}>{date}</Text>
+          </View>
+
+          <View style={styles.pickerView}>
+            <Picker
+              style={styles.dropdown}
+              selectedValue={grade}
+              onValueChange={(itemValue, itemIndex) => setGrade(itemValue)}
+            >
+              <Picker.Item label="V1" value="1" />
+              <Picker.Item label="V2" value="2" />
+              <Picker.Item label="V3" value="3" />
+              <Picker.Item label="V4" value="4" />
+              <Picker.Item label="V5" value="5" />
+              <Picker.Item label="V6" value="6" />
+              <Picker.Item label="V7" value="7" />
+              <Picker.Item label="V8" value="8" />
+              <Picker.Item label="V9" value="9" />
+              <Picker.Item label="V10" value="10" />
+              <Picker.Item label="V11" value="11" />
+            </Picker>
+          </View>
+          <ScrollView style={styles.logEntryScroll}>
+            <TextInput
+              multiline={true}
+              onChangeText={async (info) => {
+                setInfo(info);
+              }}
+              value={info}
+              placeholder={""}
+            />
+          </ScrollView>
+          <View style={styles.checkboxContainer}>
+            <Text> Route Completed </Text>
+            <CheckBox
+              value={isCompleted}
+              onValueChange={setCompleted}
+              style={styles.checkbox}
+            />
+          </View>
+        </View>
+        <View style={styles.mpContainer}>
+          <MapView
+            initialRegion={{
+              latitude: gpsLat,
+              longitude: gpsLong,
+              latitudeDelta: 0.05,
+              longitudeDelta: 0.05,
             }}
-            value={info}
-            placeholder={""}
-          />
-        </ScrollView>
-        <View style={styles.checkboxContainer}>
-          <Text> Route Completed </Text>
-          <CheckBox
-            value={isCompleted}
-            onValueChange={setCompleted}
-            style={styles.checkbox}
+            style={styles.map}
+          >
+            <Marker
+              coordinate={{
+                latitude: gpsLat,
+                longitude: gpsLong,
+              }}
+            />
+          </MapView>
+        </View>
+        <View style={styles.saveButton}>
+          <Button
+            style={styles.saveButton}
+            title="Save changes"
+            onPress={() => save()}
           />
         </View>
-      </View>
-      <View style={styles.saveButton}>
-        <Button
-          style={styles.saveButton}
-          title="Save changes"
-          onPress={() => save()}
-        />
-      </View>
-    </ScrollView>
-  );
+      </ScrollView>
+    );
+  }
 }
 
 async function addLog(list, l) {
@@ -780,11 +878,28 @@ function Newlog({ navigation }) {
   const [info, setInfo] = useState("");
   const [grade, setGrade] = useState(1);
   const [isCompleted, setCompleted] = useState(false);
+  const [useGps, setUseGps] = useState(false);
+  const [gps, setGPS] = useState(null);
+  const [gpsPermission, setGpsPermission] = useState(null);
+  const [errorMsg, setErrorMsg] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
       const data = await _getLogValues();
       setLogInfo(data);
+
+      let { status } = await Location.requestForegroundPermissionsAsync();
+
+      if (status !== "granted") {
+        setErrorMsg("the user has not granted permissions");
+        return;
+      } else {
+        setGpsPermission(true);
+      }
+
+      let loc = await Location.getCurrentPositionAsync({});
+
+      setGPS(loc);
     };
     fetchData();
   }, []);
@@ -792,14 +907,30 @@ function Newlog({ navigation }) {
   const newLog = () => {
     let d = new Date();
     console.log(d);
-    let logJson = {
-      entry_name: `${name}`,
-      date: d,
-      info: `${info}`,
-      imagePath: "",
-      grade: `${grade}`,
-      completed: `${isCompleted}`,
-    };
+    let logJson = {};
+    if (gpsPermission != true || useGps == false) {
+      logJson = {
+        entry_name: `${name}`,
+        date: d,
+        info: `${info}`,
+        imagePath: "",
+        grade: `${grade}`,
+        completed: `${isCompleted}`,
+        gpsLat: 0,
+        gpsLong: 0,
+      };
+    } else {
+      logJson = {
+        entry_name: `${name}`,
+        date: d,
+        info: `${info}`,
+        imagePath: "",
+        grade: `${grade}`,
+        completed: `${isCompleted}`,
+        gpsLat: gps.coords.latitude,
+        gpsLong: gps.coords.longitude,
+      };
+    }
     return logJson;
   };
 
@@ -808,66 +939,141 @@ function Newlog({ navigation }) {
     navigation.navigate("Climbing Log Screen");
   };
 
-  return (
-    <ScrollView style={styles.logStyle}>
-      <View>
-        <Text style={styles.goalNameText}> Log Name</Text>
-        <TextInput
-          style={styles.goalNameText}
-          onChangeText={async (name) => {
-            setName(name);
-          }}
-          value={name}
-          placeholder={"Log Name"}
-        />
-
-        <View style={styles.pickerView}>
-          <Picker
-            style={styles.dropdown}
-            selectedValue={grade}
-            onValueChange={(itemValue, itemIndex) => setGrade(itemValue)}
-          >
-            <Picker.Item label="V1" value="1" />
-            <Picker.Item label="V2" value="2" />
-            <Picker.Item label="V3" value="3" />
-            <Picker.Item label="V4" value="4" />
-            <Picker.Item label="V5" value="5" />
-            <Picker.Item label="V6" value="6" />
-            <Picker.Item label="V7" value="7" />
-            <Picker.Item label="V8" value="8" />
-            <Picker.Item label="V9" value="9" />
-            <Picker.Item label="V10" value="10" />
-            <Picker.Item label="V11" value="11" />
-          </Picker>
-        </View>
-        <ScrollView style={styles.logEntryScroll}>
+  if (errorMsg != null) {
+    return (
+      <ScrollView style={styles.logStyle}>
+        <View>
+          <Text style={styles.goalNameText}> Log Name</Text>
           <TextInput
-            multiline={true}
-            onChangeText={async (info) => {
-              setInfo(info);
+            style={styles.goalNameText}
+            onChangeText={async (name) => {
+              setName(name);
             }}
-            value={info}
-            placeholder={""}
+            value={name}
+            placeholder={"Log Name"}
           />
-        </ScrollView>
-        <View style={styles.checkboxContainer}>
-          <Text> Route Completed </Text>
-          <CheckBox
-            value={isCompleted}
-            onValueChange={setCompleted}
-            style={styles.checkbox}
+
+          <View style={styles.pickerView}>
+            <Picker
+              style={styles.dropdown}
+              selectedValue={grade}
+              onValueChange={(itemValue, itemIndex) => setGrade(itemValue)}
+            >
+              <Picker.Item label="V1" value="1" />
+              <Picker.Item label="V2" value="2" />
+              <Picker.Item label="V3" value="3" />
+              <Picker.Item label="V4" value="4" />
+              <Picker.Item label="V5" value="5" />
+              <Picker.Item label="V6" value="6" />
+              <Picker.Item label="V7" value="7" />
+              <Picker.Item label="V8" value="8" />
+              <Picker.Item label="V9" value="9" />
+              <Picker.Item label="V10" value="10" />
+              <Picker.Item label="V11" value="11" />
+            </Picker>
+          </View>
+          <ScrollView style={styles.logEntryScroll}>
+            <TextInput
+              multiline={true}
+              onChangeText={async (info) => {
+                setInfo(info);
+              }}
+              value={info}
+              placeholder={""}
+            />
+          </ScrollView>
+          <View style={styles.checkboxContainer}>
+            <Text> Route Completed </Text>
+            <CheckBox
+              value={isCompleted}
+              onValueChange={setCompleted}
+              style={styles.checkbox}
+            />
+            <Text> Log Location? </Text>
+            <CheckBox
+              value={useGps}
+              onValueChange={setUseGps}
+              style={styles.checkbox}
+            />
+          </View>
+        </View>
+        <View style={styles.saveButton}>
+          <Button
+            style={styles.saveButton}
+            title="Save"
+            onPress={() => makeAndNavigate()}
           />
         </View>
-      </View>
-      <View style={styles.saveButton}>
-        <Button
-          style={styles.saveButton}
-          title="Save"
-          onPress={() => makeAndNavigate()}
-        />
-      </View>
-    </ScrollView>
-  );
+      </ScrollView>
+    );
+  } else {
+    return (
+      <ScrollView style={styles.logStyle}>
+        <View>
+          <Text style={styles.goalNameText}> Log Name</Text>
+          <TextInput
+            style={styles.goalNameText}
+            onChangeText={async (name) => {
+              setName(name);
+            }}
+            value={name}
+            placeholder={"Log Name"}
+          />
+
+          <View style={styles.pickerView}>
+            <Picker
+              style={styles.dropdown}
+              selectedValue={grade}
+              onValueChange={(itemValue, itemIndex) => setGrade(itemValue)}
+            >
+              <Picker.Item label="V1" value="1" />
+              <Picker.Item label="V2" value="2" />
+              <Picker.Item label="V3" value="3" />
+              <Picker.Item label="V4" value="4" />
+              <Picker.Item label="V5" value="5" />
+              <Picker.Item label="V6" value="6" />
+              <Picker.Item label="V7" value="7" />
+              <Picker.Item label="V8" value="8" />
+              <Picker.Item label="V9" value="9" />
+              <Picker.Item label="V10" value="10" />
+              <Picker.Item label="V11" value="11" />
+            </Picker>
+          </View>
+          <ScrollView style={styles.logEntryScroll}>
+            <TextInput
+              multiline={true}
+              onChangeText={async (info) => {
+                setInfo(info);
+              }}
+              value={info}
+              placeholder={""}
+            />
+          </ScrollView>
+          <View style={styles.checkboxContainer}>
+            <Text> Route Completed </Text>
+            <CheckBox
+              value={isCompleted}
+              onValueChange={setCompleted}
+              style={styles.checkbox}
+            />
+            <Text> Log Location? </Text>
+            <CheckBox
+              value={useGps}
+              onValueChange={setUseGps}
+              style={styles.checkbox}
+            />
+          </View>
+        </View>
+        <View style={styles.saveButton}>
+          <Button
+            style={styles.saveButton}
+            title="Save"
+            onPress={() => makeAndNavigate()}
+          />
+        </View>
+      </ScrollView>
+    );
+  }
 }
 
 export default function App() {
@@ -1013,6 +1219,7 @@ const styles = StyleSheet.create({
   },
   checkbox: {
     alignSelf: "center",
+    marginRight: 20,
   },
   infoScroll: {
     backgroundColor: "white",
@@ -1155,5 +1362,24 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderWidth: 1,
     width: "95%",
+  },
+  mapContainer: {
+    width: "100%",
+    height: 500,
+    borderRadius: 10,
+    backgroundColor: "#ff0000",
+    alignContent: "center",
+  },
+  map: {
+    width: "90%",
+    aspectRatio: 1.75,
+    overflow: "hidden",
+    alignSelf: "center",
+    borderRadius: 5,
+  },
+  mapButton: {
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "black",
   },
 });

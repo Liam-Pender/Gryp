@@ -1,0 +1,326 @@
+commit 8ff05b7d08dbf04f0585cf723f0ace68baec591f
+Author: lpenderUoL <lp113@student.london.ac.uk>
+Date:   Sat Mar 25 19:38:02 2023 +0000
+
+    Comments to explain what each function does
+
+commit ec19b093edd74bc68d67d331dc3c61017d36b0fe
+Merge: d52acb18 e316c7c6
+Author: Liam Pender <50781082+lpenderUoL@users.noreply.github.com>
+Date:   Sat Mar 25 18:32:44 2023 +0000
+
+    Merge pull request #13 from lpenderUoL/Log-GPS
+    
+    implemented GPS and map location
+
+commit e316c7c630966b9393abc967029a25221db757c0
+Author: lpenderUoL <lp113@student.london.ac.uk>
+Date:   Sat Mar 25 17:58:09 2023 +0000
+
+    implemented GPS and map location
+
+commit d52acb18c2f07a9a8c6343df63211d2eb84183a5
+Merge: 4ea7c1c3 f549a0e6
+Author: Liam Pender <50781082+lpenderUoL@users.noreply.github.com>
+Date:   Mon Mar 20 17:01:29 2023 +0000
+
+    Merge pull request #12 from lpenderUoL/GoalDate
+    
+    fixed formatting issue with deadline date
+
+commit f549a0e6c7731a6923b71454d5ee936a1f00deeb
+Author: lpenderUoL <lp113@student.london.ac.uk>
+Date:   Mon Mar 20 16:56:42 2023 +0000
+
+    fixed formatting issue with deadline date
+
+commit 4ea7c1c3a608bada361fb0c3a84d16b8966c7374
+Merge: b20bbb0b 6b3aaf69
+Author: Liam Pender <50781082+lpenderUoL@users.noreply.github.com>
+Date:   Mon Mar 20 16:37:50 2023 +0000
+
+    Merge pull request #11 from lpenderUoL/GoalDate
+    
+    added deadline date to the goal
+
+commit 6b3aaf69bbd06fea59e173f370e2f82ae5129360
+Author: lpenderUoL <lp113@student.london.ac.uk>
+Date:   Mon Mar 20 16:34:06 2023 +0000
+
+    added deadline date to the goal
+
+commit b20bbb0bb08cd02b20589e9a959abb6f93f135a1
+Author: lpenderUoL <lp113@student.london.ac.uk>
+Date:   Sat Mar 11 19:06:02 2023 +0000
+
+    Cleaning up excess imports
+
+commit 467e7cf2f309ce2c386500ecc38deb4541bb2514
+Merge: f6b9bb23 e1fc450d
+Author: Liam Pender <50781082+lpenderUoL@users.noreply.github.com>
+Date:   Mon Mar 6 02:05:33 2023 +0000
+
+    Merge pull request #10 from lpenderUoL/training
+    
+    settings done in a sinch, only has username atm
+
+commit e1fc450df123fa61dc14e1682bc34a5103d6bddf
+Author: lpenderUoL <lp113@student.london.ac.uk>
+Date:   Mon Mar 6 02:02:08 2023 +0000
+
+    settings done in a sinch, only has username atm
+
+commit f6b9bb231a8cfdb3c60401dfadcf5d9b50e81abb
+Merge: 0488bc8c 0323c8b2
+Author: Liam Pender <50781082+lpenderUoL@users.noreply.github.com>
+Date:   Mon Mar 6 01:31:14 2023 +0000
+
+    Merge pull request #9 from lpenderUoL/training
+    
+    Training
+
+commit 0323c8b29bc6ad613bb78c15d12e8591f0d9ac3c
+Merge: 2f4780c0 0488bc8c
+Author: lpenderUoL <lp113@student.london.ac.uk>
+Date:   Mon Mar 6 01:30:09 2023 +0000
+
+    Merge branch 'main' into training
+
+commit 0488bc8c8a0538ee9d44e232100f3be835e8484a
+Merge: 2faf9b1b dcdc6595
+Author: Liam Pender <50781082+lpenderUoL@users.noreply.github.com>
+Date:   Mon Mar 6 01:23:23 2023 +0000
+
+    Merge pull request #8 from lpenderUoL/Log-Async
+    
+    Log edit and new log is done
+
+commit dcdc659504359fa2033acb3761f4fcfdc2768be4
+Author: lpenderUoL <lp113@student.london.ac.uk>
+Date:   Mon Mar 6 01:21:39 2023 +0000
+
+    Log edit and new log is done
+
+commit 2f4780c069c8489879ac789335b9717f41091cb7
+Author: lpenderUoL <lp113@student.london.ac.uk>
+Date:   Sun Mar 5 21:47:18 2023 +0000
+
+    New work out plans can be saved
+
+commit 2faf9b1b57422b19e1e09a821c7d1235a5996516
+Merge: 65d20bc9 eec65e05
+Author: Liam Pender <50781082+lpenderUoL@users.noreply.github.com>
+Date:   Sun Mar 5 14:25:01 2023 +0000
+
+    Merge pull request #7 from lpenderUoL/Goals
+    
+    Goals
+
+commit eec65e05eb7befa8f5d3040a57ec54a602bb6cdc
+Author: lpenderUoL <lp113@student.london.ac.uk>
+Date:   Sun Mar 5 14:23:30 2023 +0000
+
+    Pull to refresh on goals implemeted
+
+commit 6ae248518daa199deab1cdd5af67857aff3b90da
+Author: lpenderUoL <lp113@student.london.ac.uk>
+Date:   Sun Mar 5 13:34:30 2023 +0000
+
+    got rid of console.log printing lists constantly
+
+commit 4d7f996c1aaeb39cec35be122d2e0a19e9fc7940
+Author: lpenderUoL <lp113@student.london.ac.uk>
+Date:   Sun Mar 5 13:32:47 2023 +0000
+
+    Goal completed
+
+commit 65d20bc935e05b5fa147785ea4654a40a2d8f7d8
+Merge: 6efbee2d c073f0d1
+Author: Liam Pender <50781082+lpenderUoL@users.noreply.github.com>
+Date:   Sun Mar 5 00:56:35 2023 +0000
+
+    Merge pull request #6 from lpenderUoL/training
+    
+    Training
+
+commit c073f0d1c51c78be9d214895d4304e456c068df9
+Merge: 6d822741 b67090cc
+Author: Liam Pender <50781082+lpenderUoL@users.noreply.github.com>
+Date:   Sun Mar 5 00:53:10 2023 +0000
+
+    Merge pull request #5 from lpenderUoL/Training-sans-Timer
+    
+    Training sans timer
+
+commit b67090cce819262e0e843da3d8ac8038f4d22775
+Author: lpenderUoL <lp113@student.london.ac.uk>
+Date:   Sun Mar 5 00:46:07 2023 +0000
+
+    allows users to make new regeme. need to do saves
+
+commit e79c3ede7f7c663214382abeeb606e5ed8fdd8e2
+Author: lpenderUoL <lp113@student.london.ac.uk>
+Date:   Sat Mar 4 21:50:04 2023 +0000
+
+    Training lists and checks done
+
+commit 6d822741fcaa80ded583e992b8683d0eedfbe037
+Author: lpenderUoL <lp113@student.london.ac.uk>
+Date:   Sat Mar 4 19:50:26 2023 +0000
+
+    Mostly got the training done, just have the timer
+
+commit 6efbee2de5a150307bd8a1bbcce322b0af65317c
+Merge: bbf15cb2 3dfa0372
+Author: Liam Pender <50781082+lpenderUoL@users.noreply.github.com>
+Date:   Fri Mar 3 17:10:42 2023 +0000
+
+    Merge pull request #3 from lpenderUoL/Asyncstorage-v3
+    
+    Asyncstorage v3
+
+commit 3dfa03722c4e657b8a818f9610d68ab6340196e0
+Author: lpenderUoL <lp113@student.london.ac.uk>
+Date:   Fri Mar 3 17:05:28 2023 +0000
+
+    Got it working for goals, should be easy on rest
+
+commit 2a86aa238e8228242cde9d677b4c14af4b98da6f
+Author: lpenderUoL <lp113@student.london.ac.uk>
+Date:   Fri Mar 3 12:46:44 2023 +0000
+
+    going to try and change the json to arrays stored
+
+commit 667e5f3d8f8c310ffc4bc843fb342cbbcd72987a
+Author: lpenderUoL <lp113@student.london.ac.uk>
+Date:   Thu Mar 2 22:18:24 2023 +0000
+
+    data is being stored, almost got the retreval done
+
+commit 381e4291a9d263ebc8d5292783b61f0d6e31281b
+Author: lpenderUoL <lp113@student.london.ac.uk>
+Date:   Wed Mar 1 23:37:28 2023 +0000
+
+    made a comment for idea
+
+commit 816d70736f2b5df1a92ab0ae22215e8c2366de9d
+Author: lpenderUoL <lp113@student.london.ac.uk>
+Date:   Wed Mar 1 23:36:33 2023 +0000
+
+    trying to implement goal with async storage
+
+commit b3f167dcabd32eb3a1cd429ebf7d310afa67e3b1
+Author: lpenderUoL <lp113@student.london.ac.uk>
+Date:   Wed Mar 1 19:30:07 2023 +0000
+
+    Made the homescreen look nicer
+
+commit 7f19245dd1f62b515f44031cc63c8eec3d9cdc07
+Author: lpenderUoL <lp113@student.london.ac.uk>
+Date:   Wed Mar 1 16:59:20 2023 +0000
+
+    added images to home screen buttons
+
+commit bbf15cb27cf72faef9bd470eeaa7053369225f04
+Author: Liam Pender <50781082+lpenderUoL@users.noreply.github.com>
+Date:   Wed Mar 1 16:40:58 2023 +0000
+
+    New images
+    
+    a selection of new images for the homescreen
+
+commit 9a2f20a44532abc6399221b8482ab13e249e913d
+Merge: ba119963 f7c334ba
+Author: Liam Pender <50781082+lpenderUoL@users.noreply.github.com>
+Date:   Wed Mar 1 16:28:12 2023 +0000
+
+    Merge pull request #2 from lpenderUoL/Dev1
+    
+    Dev1
+
+commit f7c334ba81fc715272d6371b6c0b998627ec586e
+Author: lpenderUoL <lp113@student.london.ac.uk>
+Date:   Wed Mar 1 16:25:16 2023 +0000
+
+    about to implement asyn storage for climbing logs
+
+commit e7daf94961a11a5b6eb00adb0b693dcd4a74ce29
+Author: lpenderUoL <lp113@student.london.ac.uk>
+Date:   Wed Mar 1 16:18:38 2023 +0000
+
+    Implemented log page changes
+
+commit aefdf8bfa619c096ec23286db5e01e0945150675
+Author: lpenderUoL <lp113@student.london.ac.uk>
+Date:   Tue Feb 28 23:45:09 2023 +0000
+
+    building logPage
+
+commit 19d2d306da3114278e671c7f93ae3a0292cca41d
+Author: lpenderUoL <lp113@student.london.ac.uk>
+Date:   Mon Feb 27 21:10:57 2023 +0000
+
+    added overdue feature to goals
+
+commit 5027bf9511dbd2b85e727af1a4c79a6a3817ba0b
+Author: lpenderUoL <lp113@student.london.ac.uk>
+Date:   Mon Feb 27 17:44:23 2023 +0000
+
+    goals
+
+commit 7ca37b452489463460c9229d3bf5c92e40f627f4
+Author: lpenderUoL <lp113@student.london.ac.uk>
+Date:   Mon Feb 27 16:20:40 2023 +0000
+
+    existing logs appear
+
+commit dd4ace6cc1933c500e51b3544f3a6b93fa0fc494
+Author: lpenderUoL <lp113@student.london.ac.uk>
+Date:   Mon Feb 27 13:17:20 2023 +0000
+
+    added cell for climbing log
+
+commit ba1199631386c58b3ae62e0546938c91ed86c5fe
+Merge: aa3fb9be fddc4c7a
+Author: Liam Pender <50781082+lpenderUoL@users.noreply.github.com>
+Date:   Mon Feb 20 20:01:53 2023 +0000
+
+    Merge pull request #1 from lpenderUoL/Dev1
+    
+    Dev1
+
+commit fddc4c7adf651158fc7343b6e9b1f5c769f71d97
+Author: lpenderUoL <lp113@student.london.ac.uk>
+Date:   Mon Feb 20 19:36:57 2023 +0000
+
+    Home screen navigation done
+
+commit 7fe6c038bcf5ce85a9cee324733c94d2d3047035
+Author: lpenderUoL <lp113@student.london.ac.uk>
+Date:   Mon Feb 20 15:28:11 2023 +0000
+
+    making homescreen
+
+commit a44fea13eb8af708daaa7415c76c6bbfb17d28e5
+Author: lpenderUoL <lp113@student.london.ac.uk>
+Date:   Sat Feb 18 16:08:31 2023 +0000
+
+    Logo added
+
+commit 4a4e22a9da00b52470d8885fbf3e51b4cb702d08
+Author: lpenderUoL <lp113@student.london.ac.uk>
+Date:   Sat Feb 18 14:09:23 2023 +0000
+
+    inital page build
+
+commit aa3fb9be5dc1c0a39c7f68921e294c3593ddf590
+Author: lpenderUoL <lp113@student.london.ac.uk>
+Date:   Thu Feb 16 22:30:59 2023 +0000
+
+    init
+
+commit e5671ff3704ac6df4431ceb670d265354b325f29
+Author: Liam Pender <50781082+lpenderUoL@users.noreply.github.com>
+Date:   Tue Feb 14 14:56:09 2023 +0000
+
+    Initial commit

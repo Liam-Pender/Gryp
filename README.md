@@ -12,7 +12,7 @@ on your phone.
 
 Snack:
 
-1. go to the following web address https://snack.expo.dev/@liampender/gryp?platform=ios
+1. go to the following web address https://snack.expo.dev/@liampender/gryp
 2. either run a simultor or scan the QR code provided and run the
    app on your phone expo go app.
 

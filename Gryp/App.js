@@ -1,17 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import {
-  TextInput,
-  StyleSheet,
-  Text,
-  View,
-  Button,
-  SafeAreaView,
-  ScrollView,
-  Image,
-  TouchableOpacity,
-  ImageBackground,
-  FlatList,
-} from "react-native";
+import {TextInput, StyleSheet, Text, View, Button, SafeAreaView, ScrollView, Image, TouchableOpacity,   ImageBackground, FlatList, } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -144,15 +132,6 @@ function HomeScreen({ navigation }) {
             source={require("./assets/goals.jpg")}
           />
           <Text style={styles.homeCellText}>Goals</Text>
-        </TouchableOpacity>
-      </View>
-
-      <View style={styles.homeScreenCells}>
-        <TouchableOpacity
-          style={styles.homeScreenTouchable}
-          onPress={() => navigation.navigate("Setting")}
-        >
-          <Text style={styles.homeCellText}>Settings</Text>
         </TouchableOpacity>
       </View>
       <StatusBar style="auto" />
@@ -291,7 +270,7 @@ function NewWorkOut({ navigation }) {
             placeholder={"Excercise"}
           />
         </View>
-        <View style={styles.newExcersizeSelectView}>
+        <View style = {styles.newExcersizeSelectView}>
           <View style={styles.excersizePickerView}>
             <Picker
               style={styles.excersizeDropdown}
@@ -365,7 +344,7 @@ async function _getGoalValues() {
 }
 
 /**
- * The page that displays the goals
+ * The page that displays the goals 
  */
 function Goals({ navigation }) {
   const [goalArr, setGoalArr] = useState([]);
@@ -428,7 +407,7 @@ function Goals({ navigation }) {
 }
 
 /**
- *
+ * 
  * @param {*} d number of days to add to current
  * @param {*} m number of 30 day months to add to current
  * @returns the adjusted date
@@ -440,9 +419,9 @@ function addDays(d, m) {
 }
 
 /**
- *
- * @param {*} list the existing data that exists in the phone data
- * @param {*} g the new goal JSON
+ * 
+ * @param {*} list the existing data that exists in the phone data 
+ * @param {*} g the new goal JSON 
  */
 async function addGoal(list, g) {
   list.goal.push(g);
@@ -590,7 +569,7 @@ function NewGoal({ navigation }) {
 }
 
 /**
- *
+ * 
  * @returns Username info
  */
 async function _getSettingInfo() {
@@ -660,7 +639,7 @@ function Settings({ navigation }) {
 }
 
 /**
- *
+ * 
  * @returns JSON object of the logs saved to the phone.
  */
 async function _getLogValues() {
@@ -921,7 +900,7 @@ function LogPage({ route, navigation }) {
 }
 
 /**
- *
+ * 
  * @param {*} list existing data held on phone
  * @param {*} l new log entry JSON file
  */

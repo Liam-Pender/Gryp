@@ -15,7 +15,6 @@ import {
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-// import AsyncStorage from "@react-native-community/async-storage";
 import React, { useEffect, useState, useCallback } from "react";
 import { ClimbingLogCell } from "./components/ClimbingLogCell.js";
 import { GoalItem } from "./components/GoalComp";
@@ -366,7 +365,7 @@ async function _getGoalValues() {
 }
 
 /**
- * The page that displays the goals 
+ * The page that displays the goals
  */
 function Goals({ navigation }) {
   const [goalArr, setGoalArr] = useState([]);
@@ -429,7 +428,7 @@ function Goals({ navigation }) {
 }
 
 /**
- * 
+ *
  * @param {*} d number of days to add to current
  * @param {*} m number of 30 day months to add to current
  * @returns the adjusted date
@@ -441,9 +440,9 @@ function addDays(d, m) {
 }
 
 /**
- * 
- * @param {*} list the existing data that exists in the phone data 
- * @param {*} g the new goal JSON 
+ *
+ * @param {*} list the existing data that exists in the phone data
+ * @param {*} g the new goal JSON
  */
 async function addGoal(list, g) {
   list.goal.push(g);
@@ -591,7 +590,7 @@ function NewGoal({ navigation }) {
 }
 
 /**
- * 
+ *
  * @returns Username info
  */
 async function _getSettingInfo() {
@@ -661,7 +660,7 @@ function Settings({ navigation }) {
 }
 
 /**
- * 
+ *
  * @returns JSON object of the logs saved to the phone.
  */
 async function _getLogValues() {
@@ -922,7 +921,7 @@ function LogPage({ route, navigation }) {
 }
 
 /**
- * 
+ *
  * @param {*} list existing data held on phone
  * @param {*} l new log entry JSON file
  */
@@ -1222,12 +1221,6 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "0065ff",
-    alignItems: "center",
-    justifyContent: "center",
-  },
   scrollStyle: {
     width: "100%",
     height: "100%",
@@ -1287,13 +1280,6 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     marginRight: 20,
   },
-  infoScroll: {
-    backgroundColor: "white",
-    alignItems: "center",
-    justifyContent: "center",
-    width: "90%",
-    height: 100,
-  },
   dropdown: {
     alignContent: "center",
     justifyContent: "center",
@@ -1346,18 +1332,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     textAlignVertical: "center",
   },
-  trainingCell: {
-    flex: 1,
-  },
-  trainingTouchable: {
-    flex: 1,
-    flexDirection: "column",
-    margin: 4,
-    borderRadius: 5,
-    backgroundColor: "#808080",
-  },
   newExcersizeView: {
-    height: 180,
     backgroundColor: "#FFFFF0",
     padding: 10,
     borderRadius: 10,
@@ -1372,13 +1347,11 @@ const styles = StyleSheet.create({
     width: "95%",
   },
   newExcersizeSelectView: {
-    height: 70,
     width: "95%",
     flexDirection: "row",
   },
   excersizePickerView: {
     width: "50%",
-    height: 62,
     borderColor: "black",
     borderWidth: 1,
     borderRadius: 15,
@@ -1402,7 +1375,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#7CFC00",
     borderRadius: 10,
     alignSelf: "center",
-    marginBottom: 10,
+    marginVertical: 10,
     borderWidth: 1,
   },
   newGoalSelectView: {
@@ -1428,13 +1401,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderWidth: 1,
     width: "95%",
-  },
-  mapContainer: {
-    width: "100%",
-    height: 500,
-    borderRadius: 10,
-    backgroundColor: "#ff0000",
-    alignContent: "center",
   },
   map: {
     width: "90%",
